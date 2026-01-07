@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MyPerson.Api.Models;
 
 namespace MyPerson.Api.Data;
 
@@ -9,8 +10,6 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    // DbSets serão adicionados aqui conforme necessário
-    // Exemplo:
-    // public DbSet<User> Users { get; set; }
+    public DbSet<Produto> Produtos { get; set; }
 }
 

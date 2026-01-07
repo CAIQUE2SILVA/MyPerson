@@ -1,32 +1,31 @@
-# Stage 1: Build - REACT
+# Stage 1: Build - NEXT
 FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copiar arquivos de dependências
-COPY package*.json ./
+# Instalar curl para o healthcheck funcionar
+RUN apk add --no-cache curl
 
-# Instalar dependências
-RUN npm install
+# # Copiar apenas arquivos de dependências primeiro (para cache)
+COPY package.json package-lock.json* ./
 
-# Copiar código fonte
+# # Instalar dependências (com cache otimizado)
+RUN npm ci || npm install
+
+# Copiar código fonte restante
 COPY . .
 
-# Build da aplicação React
-RUN npm run build
+# Build Produção
+# RUN npm run build
 
-# Stage 2: Production - NGINX
-FROM nginx:alpine
+# Porta Produção
+EXPOSE 3000
+# Porta Desenvolvimento
+# EXPOSE 3000
 
-# Copiar arquivos buildados do stage anterior
-COPY --from=build /app/dist /usr/share/nginx/html
+#Produção - Next.js
+# CMD ["npm", "start"]
 
-# Copiar configuração customizada do nginx (opcional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expor porta 80
-EXPOSE 80
-
-# Comando para iniciar nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Desenvolvimento
+CMD ["npm", "run", "dev"]
 

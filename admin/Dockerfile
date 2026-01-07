@@ -6,22 +6,29 @@ WORKDIR /app
 # Instalar curl para o healthcheck funcionar
 RUN apk add --no-cache curl
 
-# Copiar código fonte
+# Copiar apenas arquivos de dependências primeiro (para cache)
+COPY package.json package-lock.json* ./
+
+# Limpar cache do npm e instalar dependências (incluindo devDependencies para Angular CLI)
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps || npm install
+
+# Copiar código fonte restante
 COPY . .
 
-# Instalar dependências
-RUN npm install
+# Build Produção
+# RUN npx ng build
 
-#Instalar Angular CLI 
-RUN npm install -g @angular/cli
+# Porta Produção
+# EXPOSE 4000
+# Porta Desenvolvimento
+EXPOSE 4200
 
-RUN ng build
+#Produção - SSR
+# CMD ["node", "dist/admin/server/server.mjs"]
 
-# Porta 4200
-EXPOSE 4000
-
-CMD ["node", "dist/admin/server/server.mjs"]
-# CMD ["ng", "serve", "--host", "0.0.0.0"]
+# Desenvolvimento
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", "4200"]
 
 
 
