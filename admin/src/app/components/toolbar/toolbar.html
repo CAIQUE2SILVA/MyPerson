@@ -1,0 +1,13 @@
+<mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="onMenuClick()" class="menu-button">
+        <mat-icon>{{ opened() ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+    <span class="toolbar-title">Admin Panel</span>
+    <span class="spacer"></span>
+    <button mat-icon-button>
+        <mat-icon>notifications</mat-icon>
+    </button>
+    <button mat-icon-button>
+        <mat-icon>account_circle</mat-icon>
+    </button>
+</mat-toolbar>

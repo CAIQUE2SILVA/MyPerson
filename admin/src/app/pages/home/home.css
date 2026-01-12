@@ -1,0 +1,281 @@
+.dashboard-container {
+    padding: 24px;
+    background: #0f0f23;
+    min-height: 100vh;
+    color: #ffffff;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  
+  .dashboard-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    color: #ffffff;
+  }
+  
+  .last-update {
+    color: #b0b0b0;
+    font-size: 14px;
+  }
+  
+  /* Cards de KPI */
+  .kpi-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .kpi-card {
+    padding: 24px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+  }
+  
+  .kpi-card-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .kpi-card-brown {
+    background: linear-gradient(135deg, #8b6f47 0%, #6b4e3d 100%);
+  }
+  
+  .kpi-card-red {
+    background: linear-gradient(135deg, #c94b4b 0%, #8b2635 100%);
+  }
+  
+  .kpi-icon-wrapper {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    opacity: 0.3;
+  }
+  
+  .kpi-icon-wrapper mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: white;
+  }
+  
+  .kpi-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .kpi-label {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .kpi-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+  }
+  
+  .kpi-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    width: fit-content;
+    margin-top: 4px;
+  }
+  
+  .kpi-badge.positive {
+    background: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+  }
+  
+  .kpi-badge.negative {
+    background: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+  }
+  
+  /* Gráfico */
+  .chart-section {
+    margin-bottom: 32px;
+  }
+  
+  .chart-card {
+    background: #1a1a2e;
+    border-radius: 12px;
+  }
+  
+  .chart-card mat-card-header {
+    padding: 20px 24px 0;
+  }
+  
+  .chart-card mat-card-title {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .chart-card mat-card-content {
+    padding: 24px;
+  }
+  
+  .chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  
+  .donut-chart {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+  
+  .chart-svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .chart-segment {
+    transition: opacity 0.3s;
+  }
+  
+  .chart-segment:hover {
+    opacity: 0.8;
+  }
+  
+  .chart-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  .chart-total {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  
+  .chart-label {
+    display: block;
+    font-size: 14px;
+    color: #b0b0b0;
+    margin-top: 4px;
+  }
+  
+  .chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+  }
+  
+  .legend-label {
+    flex: 1;
+    color: #ffffff;
+    font-size: 14px;
+  }
+  
+  .legend-value {
+    color: #b0b0b0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  /* Tabela */
+  .table-section {
+    margin-bottom: 32px;
+  }
+  
+  .table-card {
+    background: #1a1a2e;
+    border-radius: 12px;
+  }
+  
+  .table-card mat-card-header {
+    padding: 20px 24px 0;
+  }
+  
+  .table-card mat-card-title {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .table-card mat-card-content {
+    padding: 24px;
+  }
+  
+  .pedidos-table {
+    width: 100%;
+    background: transparent;
+  }
+  
+  .pedidos-table th {
+    color: #b0b0b0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #2a2a3e;
+    padding: 16px;
+  }
+  
+  .pedidos-table td {
+    color: #ffffff;
+    font-size: 14px;
+    padding: 16px;
+    border-bottom: 1px solid #2a2a3e;
+  }
+  
+  .pedidos-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  mat-chip {
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .kpi-cards {
+      grid-template-columns: 1fr;
+    }
+  
+    .chart-container {
+      flex-direction: column;
+    }
+  }
