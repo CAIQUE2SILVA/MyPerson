@@ -1,0 +1,29 @@
+# Environments
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# Logs
+*.log
+debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vs/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+postgres_data/
+
+# .NET
+api/bin/
+api/obj/
+
+# Node
+node_modules/

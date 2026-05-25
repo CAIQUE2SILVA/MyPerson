@@ -3,17 +3,16 @@ services:
     image: postgres:16
     container_name: myperson-postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-myperson}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-myperson123}
-      POSTGRES_DB: ${POSTGRES_DB:-myperson}
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    # Sem ports expostas — acesso apenas via rede interna Docker
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - myperson-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-myperson}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,14 +24,16 @@ services:
       dockerfile: Dockerfile
     container_name: myperson-api
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:5000
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-myperson};Username=${POSTGRES_USER:-myperson};Password=${POSTGRES_PASSWORD:-myperson123}
-      Jwt__Key: DevSecretKey_NaoUseEmProducao_min32chars!!
-      Jwt__Issuer: MyPerson.Api
-      Jwt__Audience: MyPerson
-      Auth__AdminUser: admin
-      Auth__AdminPassword: admin123
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      Jwt__Key: ${JWT_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-MyPerson.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-MyPerson}
+      Auth__AdminUser: ${AUTH_ADMIN_USER}
+      Auth__AdminPassword: ${AUTH_ADMIN_PASSWORD}
+      Cors__AllowedOrigins__0: ${CORS_ORIGIN_FRONTEND:-https://seudominio.com}
+      Cors__AllowedOrigins__1: ${CORS_ORIGIN_ADMIN:-https://admin.seudominio.com}
     expose:
       - "5000"
     depends_on:
@@ -51,17 +52,15 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: myperson-frontend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
     expose:
       - "3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=/api
     depends_on:
-      - api
-    command: sh -c "npm install && npm run dev"
+      api:
+        condition: service_healthy
     networks:
       - myperson-network
     restart: unless-stopped
@@ -71,17 +70,12 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
-    environment:
-      - WATCHPACK_POLLING=true
 
   admin:
     build:
       context: ./admin
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: myperson-admin
-    volumes:
-      - ./admin:/app
-      - /app/node_modules
     expose:
       - "4200"
     networks:
@@ -99,6 +93,7 @@ services:
     container_name: myperson-nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
