@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyPerson.Api.Data;
@@ -94,6 +95,7 @@ public class ProdutosController : ControllerBase
     /// <summary>
     /// Cria um novo produto
     /// </summary>
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<ProdutoResponseDto>> CriarProduto(CriarProdutoDto dto)
     {
@@ -145,6 +147,7 @@ public class ProdutosController : ControllerBase
     /// <summary>
     /// Atualiza um produto existente
     /// </summary>
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> AtualizarProduto(int id, AtualizarProdutoDto dto)
     {
@@ -185,6 +188,7 @@ public class ProdutosController : ControllerBase
     /// <summary>
     /// Deleta um produto
     /// </summary>
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletarProduto(int id)
     {
