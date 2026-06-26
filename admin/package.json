@@ -24,6 +24,7 @@
   "private": true,
   "packageManager": "npm@11.3.0",
   "dependencies": {
+    "@angular/animations": "^21.0.8",
     "@angular/cdk": "^21.0.6",
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
@@ -37,7 +38,7 @@
     "@primeuix/themes": "^1.0.0",
     "express": "^5.1.0",
     "primeicons": "^7.0.0",
-    "primeng": "^19.0.0",
+    "primeng": "^21.1.9",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
