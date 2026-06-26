@@ -88,15 +88,18 @@ services:
       - /app/node_modules
     expose:
       - "4200"
+    command: sh -c "npx ng serve --host 0.0.0.0 --port 4200 --poll 2000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     networks:
       - myperson-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:4200/ || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+      test: ["CMD-SHELL", "curl -f http://localhost:4200/admin/ || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
 
   nginx:
     build: ./nginx
@@ -111,7 +114,7 @@ services:
       frontend:
         condition: service_healthy
       admin:
-        condition: service_healthy
+        condition: service_started
     networks:
       - myperson-network
     restart: unless-stopped
