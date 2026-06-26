@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:16
     container_name: myperson-postgres
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-myperson}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-myperson123}
@@ -24,15 +26,17 @@ services:
       context: ./api
       dockerfile: Dockerfile
     container_name: myperson-api
+    env_file:
+      - .env
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:5000
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:5000}
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-myperson};Username=${POSTGRES_USER:-myperson};Password=${POSTGRES_PASSWORD:-myperson123}
-      Jwt__Key: DevSecretKey_NaoUseEmProducao_min32chars!!
-      Jwt__Issuer: MyPerson.Api
-      Jwt__Audience: MyPerson
-      Auth__AdminUser: admin
-      Auth__AdminPassword: admin123
+      Jwt__Key: ${JWT_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-MyPerson.Api}
+      Jwt__Audience: ${JWT_AUDIENCE:-MyPerson}
+      Auth__AdminUser: ${AUTH_ADMIN_USER:-admin}
+      Auth__AdminPassword: ${AUTH_ADMIN_PASSWORD}
     expose:
       - "5000"
     depends_on:

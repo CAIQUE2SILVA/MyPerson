@@ -1,0 +1,58 @@
+---
+description: Visão geral do monorepo MyPerson - arquitetura e estrutura
+globs: "**/*"
+alwaysApply: true
+---
+
+# MyPerson Monorepo
+
+## Arquitetura
+
+Aplicação full-stack com microserviços via Docker Compose:
+
+| Serviço | Tecnologia | Porta Interna | Rota Nginx |
+|---------|------------|---------------|------------|
+| API | ASP.NET Core 8.0 | 5000 | `/api/*` |
+| Frontend | Next.js 16 + React 19 | 3000 | `/` |
+| Admin | Angular 21 | 4200 | `/admin/*` |
+| Nginx | Reverse Proxy | 80 | - |
+| PostgreSQL | Banco de dados | 5432 | - |
+
+## Estrutura de Pastas
+
+```
+MyPerson/
+├── api/           # Backend C# - NÃO misturar com frontend
+├── frontend/      # Next.js React - App Router
+├── admin/         # Angular - Standalone components
+├── nginx/         # Configuração reverse proxy
+└── docker-compose.yml
+```
+
+## Regras Fundamentais
+
+1. **Cada pasta é um serviço independente** - não compartilhar código entre `api/`, `frontend/` e `admin/`
+2. **Comunicação via HTTP** - frontend/admin chamam a API em `http://localhost/api`
+3. **Documentação**: `PROJETO.md` (visão geral), `api/API.md` (endpoints)
+4. **Variáveis**: copiar de `env.example` para `.env`
+
+## Stack Confirmada
+
+- **API**: .NET 8, EF Core, PostgreSQL, JWT Auth
+- **Frontend**: Next.js 16, React 19, TypeScript 5.9, Tailwind 4
+- **Admin**: Angular 21, Material CDK, Tailwind 4, SSR com Express
+
+## Comandos Úteis
+
+```bash
+# Iniciar tudo
+docker-compose up -d
+
+# Logs
+docker-compose logs -f api
+docker-compose logs -f frontend
+docker-compose logs -f admin
+
+# Rebuild após mudanças
+docker-compose up -d --build
+```

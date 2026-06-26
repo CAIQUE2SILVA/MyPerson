@@ -1,0 +1,163 @@
+---
+description: Convenções do Painel Admin - Angular 21, Standalone Components, Material
+globs: "admin/**/*.{ts,html,scss,css}"
+alwaysApply: false
+---
+
+# Admin MyPerson - Angular
+
+## Stack
+
+- **Angular**: 21.0.0
+- **TypeScript**: ~5.9.2
+- **Angular Material**: 21.0.6 + CDK
+- **PrimeNG**: 19.0.0 (componentes UI adicionais)
+- **SSR**: Express 5.1.0
+
+## Estrutura de Pastas
+
+```
+admin/src/app/
+├── app.ts                 # Componente raiz (standalone)
+├── app.routes.ts          # Configuração de rotas
+├── components/
+│   ├── layout/           # Layout wrapper
+│   └── toolbar/          # Barra de navegação
+└── pages/
+    └── home/             # Páginas principais
+```
+
+## Padrão Standalone Component
+
+Angular 21 usa **standalone components** (sem NgModule):
+
+```typescript
+// toolbar.ts
+import { Component } from '@angular/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
+
+@Component({
+  selector: 'app-toolbar',
+  standalone: true,  // ✅ Standalone component
+  imports: [MatToolbarModule],  // Importar dependências aqui
+  templateUrl: './toolbar.html',
+  styleUrls: ['./toolbar.css']
+})
+export class ToolbarComponent { }
+```
+
+## Configuração de Roteamento
+
+```typescript
+// app.routes.ts
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./pages/home/home').then(m => m.HomeComponent)
+  },
+  // lazy loading de páginas
+];
+```
+
+## Padrão de Componente de Página
+
+```typescript
+// pages/home/home.ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './home.html',
+  styleUrls: ['./home.css']
+})
+export class HomeComponent {
+  title = 'Painel Administrativo';
+}
+```
+
+Template (`home.html`):
+```html
+<div class="dashboard-container">
+  <h1 class="dashboard-title">{{ title }}</h1>
+</div>
+```
+
+## Regras de Implementação
+
+### ✅ Faça
+- Use `standalone: true` em todos os componentes
+- Importe dependências no array `imports` do componente
+- Use Angular Material para componentes de UI (botões, cards, tabelas)
+- Use PrimeNG para componentes adicionais (DataTable, Calendar, etc.)
+- Faça lazy loading de páginas com `loadComponent`
+
+### ❌ Não Faça
+- Não crie NgModules (padrão antigo)
+- Não importe componentes que não são usados
+- Não use `ng serve --host` (use via Docker na porta 4200)
+
+## Material Design
+
+Componentes disponíveis em `@angular/material`:
+
+```typescript
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+```
+
+Uso no template:
+```html
+<button mat-raised-button color="primary">Salvar</button>
+<mat-card>Conteúdo</mat-card>
+```
+
+## Estilização
+
+Use CSS puro ou Angular Material/PrimeNG:
+
+```html
+<!-- Angular Material -->
+<mat-card class="custom-card">
+  <mat-card-title class="card-title">Título</mat-card-title>
+</mat-card>
+
+<!-- PrimeNG -->
+<p-card header="Título">
+  <p>Conteúdo do card</p>
+</p-card>
+```
+
+## SSR (Server-Side Rendering)
+
+Configurado com Express. Arquivos relevantes:
+- `app.config.server.ts` - Configuração SSR
+- `app.routes.server.ts` - Rotas servidor
+- `main.server.ts` - Entry point SSR
+
+## Comandos
+
+```bash
+cd admin
+npm start              # ng serve (localhost:4200)
+npm run build          # build de produção
+npm run serve:ssr      # SSR com Node.js
+```
+
+## Proxy para API
+
+Em desenvolvimento, o admin acessa a API via Nginx em `/api/*`.
+
+## Prettier Configurado
+
+Projeto tem Prettier configurado em `package.json`:
+- `printWidth: 100`
+- `singleQuote: true`
+- Parser Angular para arquivos `.html`

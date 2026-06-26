@@ -1,0 +1,164 @@
+---
+description: Convenções Docker e Nginx - infraestrutura do monorepo
+globs: "**/Dockerfile*,docker-compose*.yml,nginx/**"
+alwaysApply: false
+---
+
+# Infraestrutura MyPerson - Docker & Nginx
+
+## Docker Compose
+
+### Ambientes
+
+| Arquivo | Uso |
+|---------|-----|
+| `docker-compose.yml` | Desenvolvimento |
+| `docker-compose.prod.yml` | Produção |
+
+### Serviços
+
+```yaml
+# Estrutura do compose
+services:
+  nginx:       # Reverse proxy, porta 80
+  api:         # ASP.NET Core, porta 5000
+  frontend:    # Next.js, porta 3000
+  admin:       # Angular, porta 4200
+  postgres:    # PostgreSQL, porta 5432
+```
+
+## Nginx - Reverse Proxy
+
+Roteamento configurado em `nginx/nginx.conf`:
+
+```nginx
+# /api/* → API (porta 5000)
+location /api/ {
+    proxy_pass http://api:5000/api/;
+}
+
+# /admin/* → Admin Angular (porta 4200)
+location /admin/ {
+    proxy_pass http://admin:4200/;
+}
+
+# / → Frontend Next.js (porta 3000)
+location / {
+    proxy_pass http://frontend:3000/;
+}
+```
+
+## Dockerfile - Padrões
+
+### API (Multi-stage)
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 5000
+ENTRYPOINT ["dotnet", "MyPerson.Api.dll"]
+```
+
+### Frontend/Admin (Node + Alpine)
+
+```dockerfile
+# Desenvolvimento
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json .
+RUN npm install
+COPY . .
+EXPOSE 3000  # ou 4200 para admin
+CMD ["npm", "run", "dev"]
+
+# Produção (multi-stage)
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json .
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json ./
+RUN npm ci --only=production
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
+```
+
+## Variáveis de Ambiente
+
+Copiar `env.example` → `.env` na raiz:
+
+```bash
+# Banco de dados
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=senha_segura
+POSTGRES_DB=myperson
+
+# JWT
+JWT_KEY=chave_secreta_minimo_32_caracteres
+JWT_ISSUER=MyPerson
+JWT_AUDIENCE=MyPersonUsers
+
+# Admin
+AUTH_ADMIN_USER=admin
+AUTH_ADMIN_PASSWORD=senha_admin
+```
+
+## Comandos Úteis
+
+```bash
+# Iniciar ambiente de desenvolvimento
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f [servico]
+
+# Rebuild após mudanças
+docker-compose up -d --build
+
+# Parar tudo
+docker-compose down
+
+# Ambiente de produção
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## Hot Reload
+
+Em desenvolvimento, volumes são montados para hot reload:
+- Código em `api/` → reflete no container `api`
+- Código em `frontend/` → reflete no container `frontend`
+- Código em `admin/` → reflete no container `admin`
+
+## Regras de Implementação
+
+### ✅ Faça
+- Use multi-stage builds para imagens menores
+- Exponha apenas as portas internas (5000, 3000, 4200)
+- Mantenha `node_modules` no `.dockerignore`
+- Use `npm ci` em produção (mais rápido e determinístico)
+
+### ❌ Não Faça
+- Não commit o arquivo `.env` (use `env.example`)
+- Não exponha portas de banco de dados externamente
+- Não use `npm install` em produção (use `npm ci`)
+
+## Health Checks
+
+A API expõe endpoint de health check:
+```bash
+curl http://localhost/api/health
+```
+
+Resposta: `Healthy`

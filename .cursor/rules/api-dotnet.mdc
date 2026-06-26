@@ -1,0 +1,107 @@
+---
+description: Convenções da API ASP.NET Core - controllers, DTOs e EF Core
+globs: "api/**/*.cs"
+alwaysApply: false
+---
+
+# API MyPerson - ASP.NET Core
+
+## Estrutura de Pastas
+
+```
+api/
+├── Controllers/          # Controllers da API
+├── Data/
+│   ├── Migrations/     # EF Core Migrations
+│   └── ApplicationDbContext.cs
+├── Models/
+│   ├── DTOs/           # Data Transfer Objects
+│   └── Auth/           # Modelos de autenticação
+└── appsettings*.json
+```
+
+## Padrão de Controller
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class NomeController : ControllerBase
+{
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<NomeController> _logger;
+
+    public NomeController(ApplicationDbContext context, ILogger<NomeController> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+}
+```
+
+## Regras de Implementação
+
+### ✅ Faça
+- Use `[ApiController]` e `[Route("api/[controller]")]`
+- Crie DTOs em `Models/DTOs/` para entrada e saída
+- Use `try/catch` com `_logger.LogError()`
+- Aplique `[Authorize]` em operações de escrita e listagens protegidas
+- Retorne `ActionResult<T>` com `Ok()`, `CreatedAtAction()`, `NotFound()`, `BadRequest()`
+
+### ❌ Não Faça
+- Não exponha entidades do EF diretamente nos endpoints
+- Não esqueça o tratamento de exceções com logging
+- Não misture lógica de negócio no controller (use services se crescer)
+
+## DTOs
+
+Local: `api/Models/DTOs/`
+
+```csharp
+// Criar{Entidade}Dto.cs - POST
+public class CriarProdutoDto
+{
+    public string Nome { get; set; } = string.Empty;
+    public decimal Preco { get; set; }
+}
+
+// {Entidade}ResponseDto.cs - GET
+public class ProdutoResponseDto
+{
+    public int Id { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public DateTime DataCriacao { get; set; }
+}
+```
+
+## Autenticação
+
+- Use `[Authorize]` nas actions que requerem login
+- JWT configurado em `Program.cs`
+- Endpoint de login: `POST /api/auth/login`
+
+## Migrations
+
+Criar nova migration:
+```bash
+dotnet ef migrations add NomeDaMigration --project api/MyPerson.Api.csproj
+dotnet ef database update --project api/MyPerson.Api.csproj
+```
+
+## Respostas HTTP
+
+| Código | Uso |
+|--------|-----|
+| 200 | GET bem-sucedido |
+| 201 | POST - recurso criado (retorne `CreatedAtAction`) |
+| 204 | PUT/DELETE bem-sucedido |
+| 400 | Dados inválidos |
+| 401 | Não autenticado |
+| 404 | Recurso não encontrado |
+| 409 | Conflito (ex: e-mail duplicado) |
+
+## Variáveis de Ambiente
+
+Definidas em `env.example`:
+- `POSTGRES_*` - Conexão com banco
+- `JWT_*` - Configuração JWT
+- `AUTH_ADMIN_*` - Credenciais admin

@@ -1,0 +1,137 @@
+---
+description: Convenções do Frontend Next.js - React 19, App Router, Tailwind 4
+globs: "frontend/**/*.{ts,tsx,css}"
+alwaysApply: false
+---
+
+# Frontend MyPerson - Next.js
+
+## Stack
+
+- **Next.js**: 16.2.9 (App Router)
+- **React**: 19.2.0
+- **TypeScript**: 5.9.3
+- **Tailwind CSS**: 4.x
+- **ESLint**: 9.x com config Next
+
+## Estrutura de Pastas
+
+```
+frontend/src/
+├── app/                    # App Router (Next.js 13+)
+│   ├── page.tsx           # Página inicial /
+│   ├── layout.tsx         # Layout raiz
+│   ├── globals.css        # Estilos globais
+│   ├── produtos/
+│   │   └── page.tsx       # /produtos
+│   ├── produtos/[id]/
+│   │   └── page.tsx       # /produtos/123 (dinâmico)
+│   └── (outras rotas).../
+└── components/
+    ├── layout/            # Header, Footer
+    └── sections/          # HeroSection, FeaturedProducts, etc.
+```
+
+## Padrões de Componente
+
+### Server Component (padrão)
+
+```tsx
+// app/page.tsx - Server Component por padrão
+export default function HomePage() {
+  return (
+    <main>
+      <HeroSection />
+    </main>
+  );
+}
+```
+
+### Client Component (quando necessário)
+
+```tsx
+"use client";
+
+// Só use quando precisar de:
+// - useState, useEffect
+// - event handlers (onClick, onSubmit)
+// - browser APIs (localStorage, window)
+
+export function BotaoInterativo() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+
+### Componentes de Seção
+
+Local: `frontend/src/app/components/sections/`
+
+```tsx
+// HeroSection.tsx
+export function HeroSection() {
+  return (
+    <section className="py-16 px-4">
+      <h1 className="text-4xl font-bold">Título</h1>
+    </section>
+  );
+}
+```
+
+## Regras de Implementação
+
+### ✅ Faça
+- Use Server Components por padrão (melhor performance)
+- Coloque Client Components em `components/` ou marque com `"use client"`
+- Use Tailwind para estilização
+- Chame a API via fetch: `http://localhost/api/{endpoint}`
+
+### ❌ Não Faça
+- Não use `useEffect` para fetch de dados (use Server Components)
+- Não misture CSS modules com Tailwind (prefira Tailwind)
+- Não crie `pages/` (projeto usa App Router em `app/`)
+
+## Fetch de Dados
+
+```tsx
+// Server Component - fetch automático
+export default async function ProdutosPage() {
+  const res = await fetch('http://localhost/api/produtos');
+  const produtos = await res.json();
+
+  return (
+    <ul>
+      {produtos.map(p => <li key={p.id}>{p.nome}</li>)}
+    </ul>
+  );
+}
+```
+
+## Estilização com Tailwind 4
+
+```tsx
+// classes utilitárias
+className="flex items-center justify-between py-4 px-6 bg-white shadow-sm"
+
+// responsivo
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+
+// estados
+className="hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
+```
+
+## Comandos
+
+```bash
+cd frontend
+npm run dev      # localhost:3000
+npm run build    # build de produção
+npm run lint     # verificar ESLint
+```
+
+## Variáveis de Ambiente
+
+Criar `frontend/.env.local` baseado em `env.example`:
+```
+NEXT_PUBLIC_API_URL=http://localhost/api
+```
