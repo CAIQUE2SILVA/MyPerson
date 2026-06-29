@@ -9,8 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { AuthService } from '../../core/api/auth/auth.service';
-import { LoginFooter } from '../../components/login-footer/login-footer';
+import { AuthService } from '../../../../core/api/auth/auth.service';
+import { LoginFooter } from '../../../../ui/layout/login-footer/login-footer';
 
 @Component({
   selector: 'app-login',
