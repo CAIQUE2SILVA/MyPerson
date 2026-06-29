@@ -75,11 +75,11 @@ mat-card-subtitle {
   font-size: 0.8125rem;
   font-weight: 500;
   transition: color 0.2s ease;
-}
 
-.forgot-password:hover {
-  color: #1a237e;
-  text-decoration: underline;
+  &:hover {
+    color: #1a237e;
+    text-decoration: underline;
+  }
 }
 
 /* Responsividade */
