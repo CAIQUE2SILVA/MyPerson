@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Admin MyPerson - Angular
 
+> Arquitetura em camadas (core/shared/ui/features): ver `admin-architecture.mdc`
+
 ## Stack
 
 - **Angular**: 21.0.0
@@ -16,15 +18,16 @@ alwaysApply: false
 
 ## Estrutura de Pastas
 
+Estrutura alvo em camadas — detalhes em `admin-architecture.mdc`:
+
 ```
 admin/src/app/
-├── app.ts                 # Componente raiz (standalone)
-├── app.routes.ts          # Configuração de rotas
-├── components/
-│   ├── layout/           # Layout wrapper
-│   └── toolbar/          # Barra de navegação
-└── pages/
-    └── home/             # Páginas principais
+├── core/          # services, guards, interceptors
+├── shared/        # models, constants, utils
+├── ui/            # componentes reutilizáveis
+├── features/      # domínios lazy-loaded
+├── app.ts         # componente raiz (standalone)
+└── app.routes.ts
 ```
 
 ## Padrão Standalone Component
@@ -96,10 +99,36 @@ Template (`home.html`):
 - Use PrimeNG para componentes adicionais (DataTable, Calendar, etc.)
 - Faça lazy loading de páginas com `loadComponent`
 
-### ❌ Não Faça
+### ❌ Não Faça (proibido)
+
+**Template**
+- Chamar funções no template (`{{ format(x) }}`, `*ngFor="let i of filter(list)"`) — usar pipe, signal ou propriedade
+- Criar objetos/arrays inline no template (`[config]="{ a: 1 }"`) — causa re-render desnecessário
+- Lógica de negócio complexa em `*ngIf` / `*ngFor` — mover para o `.ts`
+- `*ngFor` sem `trackBy`
+
+**Memory leaks**
+- `subscribe()` sem `takeUntil`, `takeUntilDestroyed` ou `async` pipe
+- `subscribe` aninhado — usar `switchMap` / `mergeMap`
+- `addEventListener`, `setInterval`, `setTimeout` sem cleanup no destroy
+- `Subject` sem `complete()` no `ngOnDestroy`
+
+**Arquitetura**
 - Não crie NgModules (padrão antigo)
-- Não importe componentes que não são usados
+- Não use `HttpClient` direto — usar `RestService`
+- Não coloque lógica de negócio em componentes `ui/`
+- Não importe uma feature dentro de outra
+- Não hardcode URLs da API
+- Não use `any` em tipos de API/models
+- Não acesse `window`/`localStorage` sem guard SSR (`isPlatformBrowser`)
+
+**Outros**
+- Não importe componentes/modules não usados
 - Não use `ng serve --host` (use via Docker na porta 4200)
+- Não use `toPromise()` — usar `firstValueFrom`
+- Não mute `@Input()` do componente pai
+
+> Lista completa com exemplos: `admin-architecture.mdc` → seção **⛔ Proibido**
 
 ## Material Design
 
