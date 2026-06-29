@@ -1,7 +1,6 @@
 /* Layout da página com header e footer fixos */
 .login-main {
   min-height: 100vh;
-  padding-top: 64px; /* Espaço para o header */
   padding-bottom: 48px; /* Espaço para o footer */
   display: flex;
   flex-direction: column;
@@ -85,19 +84,14 @@ mat-card-subtitle {
 
 /* Responsividade */
 @media (max-width: 600px) {
-  .login-main {
-    padding-top: 56px;
-    padding-bottom: 60px;
-  }
-  
   .login-page {
     padding: 1rem;
   }
-  
+
   .login-card {
     max-width: 100%;
   }
-  
+
   mat-card-title {
     font-size: 1.25rem;
   }

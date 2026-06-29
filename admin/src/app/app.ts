@@ -4,7 +4,7 @@ import { BlockUI } from 'primeng/blockui';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { Toast } from 'primeng/toast';
 
-import { LoadingService } from './services/loading/loading.service';
+// import { LoadingService } from './services/loading/loading.service';
 
 @Component({
   selector: 'app-root',
@@ -14,5 +14,5 @@ import { LoadingService } from './services/loading/loading.service';
 })
 export class App {
   protected readonly title = signal('admin');
-  readonly loading = inject(LoadingService);
+  // readonly loading = inject(LoadingService);
 }

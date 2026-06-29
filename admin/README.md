@@ -1,59 +1,76 @@
-# Admin
+# Admin MyPerson
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.1.
+Painel administrativo em **Angular 21** com componentes standalone, Angular Material, Tailwind 4 e SSR via Express.
 
-## Development server
+## Acesso
 
-To start a local development server, run:
+| Ambiente   | URL |
+|------------|-----|
+| Docker/Nginx | http://localhost/admin |
+| Dev local (`ng serve`) | http://localhost:4200 |
 
-```bash
-ng serve
+A API é chamada em `http://localhost/api` (proxy Nginx em produção).
+
+## Funcionalidades
+
+- Login com JWT (`POST /api/auth/login`)
+- Proteção de rotas com guards de autenticação
+- Dashboard (home) com layout, toolbar e cards de resumo
+- Serviços centralizados em `core/` (HTTP, auth, loading, notificações)
+
+## Estrutura
+
+```
+admin/src/app/
+├── app.ts / app.routes.ts     # Raiz e rotas principais
+├── core/
+│   ├── api/auth/              # AuthService (login, token, logout)
+│   ├── guards/                # authGuard, guestGuard
+│   ├── interceptors/          # JWT no header Authorization
+│   └── services/              # RestService, Loading, Notification
+├── components/
+│   ├── layout/                # Shell autenticado (toolbar + outlet)
+│   ├── toolbar/               # Barra superior
+│   ├── login-header/          # Header da tela de login
+│   └── login-footer/          # Footer da tela de login
+├── pages/
+│   ├── login/                 # Tela de login (rota pública)
+│   └── home/                  # Dashboard (rota protegida)
+└── shared/models/             # DTOs compartilhados (login, etc.)
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Rotas
 
-## Code scaffolding
+| Rota (relativa a `/admin/`) | Guard      | Descrição |
+|-----------------------------|------------|-----------|
+| `login`                     | guestGuard | Formulário de login |
+| `` (vazio)                  | authGuard  | Layout + dashboard home |
+| `**`                        | —          | Redireciona para home |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Comandos
 
 ```bash
-ng generate --help
+npm install          # dependências
+npm start            # dev server (porta 4200)
+npm run build        # build de produção (baseHref: /admin/)
+npm test             # testes (Vitest)
+npm run serve:ssr:admin  # SSR após build
 ```
 
-## Building
+## Convenções
 
-To build the project run:
+- Componentes **standalone** (`standalone: true`) — sem NgModules
+- Lazy loading de páginas com `loadComponent` / `loadChildren`
+- Angular Material para UI (formulários, cards, toolbar)
+- Estilos globais em `src/styles.css`, reset em `src/app/app.css`
+- Prettier configurado para templates Angular (`.html`)
+
+## Build e Docker
+
+O `angular.json` define `baseHref: "/admin/"` para servir corretamente atrás do Nginx.
+
+Rebuild do container após mudanças:
 
 ```bash
-ng build
+docker-compose up -d --build admin
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

@@ -5,7 +5,7 @@ import { Observable, tap } from 'rxjs';
 
 import { LoginRequest } from '../../../shared/models/auth/login-request.model';
 import { LoginResponse } from '../../../shared/models/auth/login-response.model';
-import { RestService } from '../../../services/rest/rest.service';
+import { RestService } from '../../services/rest/rest.service';
 
 const TOKEN_KEY = 'myperson_admin_token';
 const EXPIRATION_KEY = 'myperson_admin_token_exp';

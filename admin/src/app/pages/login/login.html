@@ -1,5 +1,3 @@
-<app-login-header />
-
 <main class="login-main">
   <div class="login-page">
     <mat-card class="login-card">
@@ -14,47 +12,32 @@
             <mat-label>Usuário</mat-label>
             <input matInput formControlName="username" autocomplete="username" />
             @if (form.controls.username.touched && form.controls.username.hasError('required')) {
-              <mat-error>Usuário é obrigatório</mat-error>
+            <mat-error>Usuário é obrigatório</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Senha</mat-label>
-            <input
-              matInput
-              [type]="hidePassword() ? 'password' : 'text'"
-              formControlName="password"
-              autocomplete="current-password"
-            />
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="togglePasswordVisibility()"
-              [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'"
-            >
+            <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password"
+              autocomplete="current-password" />
+            <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()"
+              [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'">
               <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             @if (form.controls.password.touched && form.controls.password.hasError('required')) {
-              <mat-error>Senha é obrigatória</mat-error>
+            <mat-error>Senha é obrigatória</mat-error>
             }
           </mat-form-field>
 
           @if (errorMessage()) {
-            <p class="error-message" role="alert">{{ errorMessage() }}</p>
+          <p class="error-message" role="alert">{{ errorMessage() }}</p>
           }
 
-          <button
-            mat-flat-button
-            color="primary"
-            type="submit"
-            class="full-width submit-button"
-            [disabled]="loading()"
-          >
+          <button mat-flat-button color="primary" type="submit" class="full-width submit-button" [disabled]="loading()">
             @if (loading()) {
-              <mat-spinner diameter="20"></mat-spinner>
+            <mat-spinner diameter="20"></mat-spinner>
             } @else {
-              Entrar
+            Entrar
             }
           </button>
         </form>
