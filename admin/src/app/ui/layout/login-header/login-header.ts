@@ -4,16 +4,15 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-login-footer',
+  selector: 'app-login-header',
   standalone: true,
   imports: [
     CommonModule,
     MatToolbarModule,
     MatIconModule,
   ],
-  templateUrl: './login-footer.html',
-  styleUrl: './login-footer.css',
+  templateUrl: './login-header.html',
+  styleUrl: './login-header.scss',
 })
-export class LoginFooter {
-  currentYear = new Date().getFullYear();
+export class LoginHeader {
 }

@@ -1,0 +1,98 @@
+/* Layout da página com header e footer fixos */
+.login-main {
+  min-height: 100vh;
+  padding-bottom: 48px; /* Espaço para o footer */
+  display: flex;
+  flex-direction: column;
+}
+
+.login-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.5rem 0 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 12px !important;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.submit-button {
+  margin-top: 0.5rem;
+  height: 48px;
+}
+
+.error-message {
+  margin: 0;
+  color: #c62828;
+  font-size: 0.875rem;
+}
+
+mat-card-header {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a237e;
+}
+
+mat-card-subtitle {
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 0.25rem !important;
+}
+
+.login-actions {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 1rem 1rem !important;
+  margin: 0;
+}
+
+.forgot-password {
+  color: #3949ab;
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #1a237e;
+    text-decoration: underline;
+  }
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .login-page {
+    padding: 1rem;
+  }
+
+  .login-card {
+    max-width: 100%;
+  }
+
+  mat-card-title {
+    font-size: 1.25rem;
+  }
+}

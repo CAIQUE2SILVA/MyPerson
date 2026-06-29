@@ -52,22 +52,22 @@
   transition: color 0.2s ease;
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
-}
 
-.nav-link:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
+  &:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 @media (max-width: 600px) {
   .nav-menu {
     display: none;
   }
-  
+
   .login-header {
     height: 56px;
   }
-  
+
   .brand-name {
     font-size: 1.25rem;
   }

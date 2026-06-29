@@ -23,8 +23,8 @@ import { Toolbar } from '../toolbar/toolbar';
     MatListModule,
     Toolbar
   ],
-  templateUrl: './layout.html',
-  styleUrl: './layout.css'
+  templateUrl: './main-layout.html',
+  styleUrl: './main-layout.scss'
 })
 export class LayoutComponent {
   opened = signal(true);

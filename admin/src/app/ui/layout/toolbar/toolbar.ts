@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 
-import { AuthService } from '../../core/api/auth/auth.service';
+import { AuthService } from '../../../../core/api/auth/auth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -18,7 +18,7 @@ import { AuthService } from '../../core/api/auth/auth.service';
     MatMenuModule,
   ],
   templateUrl: './toolbar.html',
-  styleUrl: './toolbar.css',
+  styleUrl: './toolbar.scss',
 })
 export class Toolbar {
   private readonly authService = inject(AuthService);

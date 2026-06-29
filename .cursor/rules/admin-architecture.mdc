@@ -1,0 +1,208 @@
+---
+description: Arquitetura em camadas do Admin Angular - core, shared, ui, features
+globs: "admin/**/*.{ts,html,scss,css}"
+alwaysApply: false
+---
+
+# Admin - Arquitetura em Camadas
+
+Angular 21 com **standalone components** (sem NgModules). Organize por responsabilidade:
+
+```
+admin/src/app/
+├── core/           # Singleton: HTTP, auth, guards, interceptors
+├── shared/         # Models, enums, pipes, directives, constants, utils
+├── ui/             # Componentes reutilizáveis sem lógica de negócio
+├── features/       # Domínios lazy-loaded (auth, products, dashboard…)
+├── components/     # Layout legado — migrar para ui/layout/
+└── pages/          # Páginas legado — migrar para features/
+```
+
+## Camadas e Responsabilidades
+
+| Camada | Conteúdo | Regra |
+|--------|----------|-------|
+| **core** | `RestService`, `AuthService`, guards, interceptors | Importado via `app.config.ts`; nunca importar features |
+| **shared** | Models, enums, pipes, validators, `API_ENDPOINTS` | Sem dependência de features ou ui |
+| **ui** | Buttons, form wrappers, layout, data-table | Stateless; sem chamadas HTTP |
+| **features** | Pages, feature services, rotas do domínio | Lógica de negócio; usa core + shared + ui |
+
+## Core
+
+- **HTTP**: usar `RestService` (`core/services/rest/`), não `HttpClient` direto em features
+- **Auth**: `AuthService` em `core/api/auth/`; token via `AuthInterceptor`
+- **Guards**: `authGuard`, `guestGuard`, `roleGuard` em `core/guards/`
+- **Notificações**: `NotificationService` (wrapper PrimeNG Toast)
+
+```typescript
+// ✅ Feature service delega ao RestService
+@Injectable({ providedIn: 'root' })
+export class ProductService {
+  private readonly rest = inject(RestService);
+
+  getProducts(page: number, limit: number): Observable<PaginationResponse<Product>> {
+    return this.rest.get<PaginationResponse<Product>>('/products', {
+      params: { page, limit },
+    });
+  }
+}
+```
+
+## Shared
+
+- Models em `shared/models/` (ex.: `user.model.ts`, `api-response.model.ts`)
+- Endpoints em `shared/constants/api.constants.ts` — nunca strings hardcoded
+- Validadores customizados em `shared/utils/validators.util.ts`
+- Diretiva de permissão: `*appHasPermission="'DELETE_PRODUCT'"`
+
+## UI
+
+- **layout/**: `main-layout`, `sidebar`, `header`
+- **common/**: `primary-button`, `spinner`, `empty-state`
+- **forms/**: `input-wrapper` com `FormControl`, mensagens de erro
+- **data-display/**: wrappers de tabela PrimeNG
+
+Componentes UI recebem `@Input`/`@Output`; não injetam feature services.
+
+## Features
+
+Estrutura por domínio:
+
+```
+features/products/
+├── pages/          # product-list, product-form, product-detail
+├── components/     # product-card, product-filter (específicos do domínio)
+├── services/       # product.service.ts
+└── products.routes.ts
+```
+
+Rotas lazy com `loadComponent` ou `loadChildren` apontando para arquivo de rotas:
+
+```typescript
+{
+  path: 'products',
+  loadChildren: () => import('./features/products/products.routes').then(m => m.routes),
+}
+```
+
+## RxJS
+
+```typescript
+// ❌ subscribe sem cleanup
+ngOnInit() { this.service.get().subscribe(d => this.data = d); }
+
+// ✅ async pipe no template
+products$ = this.productService.getProducts();
+
+// ✅ takeUntil em subscribe manual
+private destroy$ = new Subject<void>();
+ngOnDestroy() { this.destroy$.next(); this.destroy$.complete(); }
+```
+
+Busca com debounce: `debounceTime(300)` + `distinctUntilChanged()` + `switchMap`.
+
+## Formulários e Tipagem
+
+- Reactive Forms com validadores de `shared/utils/`
+- Sempre tipar responses: `Observable<PaginationResponse<Product>>` — evitar `any`
+- Erros HTTP centralizados no interceptor; features usam `NotificationService` para feedback local
+
+## Estilos
+
+- Variáveis SCSS em `assets/styles/_variables.scss` (cores, spacing, breakpoints)
+- CSS vars no componente: `var(--color-primary)`, `var(--text-primary)`
+- PrimeNG: estilizar via `::ng-deep` apenas quando necessário
+
+## ⛔ Proibido — Nunca Faça
+
+### Template
+
+```html
+<!-- ❌ Chamar função no template — roda a cada change detection -->
+<p>{{ formatPrice(product.price) }}</p>
+<div *ngFor="let item of filterItems(list)">
+
+<!-- ❌ Criar objeto/array inline — nova referência a cada ciclo -->
+<app-card [config]="{ title: name, active: true }">
+<child [items]="items.filter(i => i.active)">
+
+<!-- ❌ Lógica de negócio no template -->
+<div *ngIf="user.role === 'ADMIN' && user.permissions.includes('DELETE')">
+
+<!-- ✅ Pipe, signal, computed ou propriedade preparada no .ts -->
+<p>{{ product.price | currency:'BRL' }}</p>
+<div *ngFor="let item of filteredItems()">
+<app-card [config]="cardConfig">
+```
+
+- Nunca use `*ngFor` sem `trackBy`
+- Nunca acesse `localStorage`/`window`/`document` sem checar `isPlatformBrowser` (SSR)
+
+### Memory Leaks
+
+```typescript
+// ❌ subscribe sem cleanup
+ngOnInit() {
+  this.service.getData().subscribe(d => this.data = d);
+  this.form.valueChanges.subscribe(v => this.save(v));
+  window.addEventListener('resize', this.onResize);
+  setInterval(() => this.poll(), 5000);
+}
+
+// ❌ subscribe aninhado
+this.service.getA().subscribe(a => {
+  this.service.getB(a.id).subscribe(b => this.b = b);
+});
+
+// ✅ async pipe, takeUntil ou DestroyRef
+private destroyRef = inject(DestroyRef);
+data$ = this.service.getData();
+
+ngOnInit() {
+  this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(...);
+}
+
+// ✅ switchMap em vez de subscribe aninhado
+this.id$.pipe(switchMap(id => this.service.getB(id))).subscribe(...);
+```
+
+- Sempre completar `Subject` em `ngOnDestroy` quando usar `takeUntil`
+- Sempre remover listeners, `clearInterval` e `unsubscribe` manual se não usar `takeUntilDestroyed`
+
+### Arquitetura e Código
+
+- **HttpClient** direto em componentes ou features — usar `RestService`
+- **Lógica de negócio** em componentes `ui/` — ui é stateless
+- **Imports cruzados** entre features (ex.: `products` importando de `clients`)
+- **NgModules** — projeto usa standalone
+- **Tipo `any`** em responses HTTP, models ou `@Input`
+- **URLs de API** hardcoded — usar `shared/constants/api.constants.ts`
+- **`::ng-deep`** sem necessidade — preferir CSS vars ou classes do tema
+- **`toPromise()`** — usar `firstValueFrom` / `lastValueFrom`
+- **Mutar `@Input()`** recebido do pai — emitir `@Output` ou clonar
+
+### RxJS
+
+```typescript
+// ❌ Ignorar erro no subscribe
+this.service.delete(id).subscribe();
+
+// ❌ Múltiplos subscribe no mesmo Observable sem shareReplay
+this.products$ = this.service.getProducts(); // OK com async pipe
+// mas se subscribe 3x no mesmo observable sem share → 3 HTTP calls
+
+// ✅ tratar erro + preferir async pipe ou shareReplay(1)
+this.service.delete(id).subscribe({
+  next: () => this.notification.success('Removido'),
+  error: () => this.notification.error('Falha ao remover'),
+});
+```
+
+## Checklist ao Criar Feature
+
+1. Model em `shared/models/`
+2. Endpoints em `shared/constants/api.constants.ts`
+3. Service em `features/<nome>/services/` usando `RestService`
+4. Page standalone com lazy route
+5. Componentes de domínio em `features/<nome>/components/`
+6. Reutilizáveis genéricos em `ui/`
