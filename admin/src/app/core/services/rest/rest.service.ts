@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
 
-import { environment } from '../../../environments/enviroment';
+import { environment } from '../../../../environments/enviroment';
 import { LoadingService } from '../loading/loading.service';
 import { NotificationService } from '../notification/notification.service';
 
