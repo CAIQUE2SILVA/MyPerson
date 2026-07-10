@@ -22,6 +22,32 @@ namespace MyPerson.Api.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MyPerson.Api.Models.Categoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Categorias");
+                });
+
             modelBuilder.Entity("MyPerson.Api.Models.Cliente", b =>
                 {
                     b.Property<int>("Id")
@@ -76,9 +102,8 @@ namespace MyPerson.Api.Data.Migrations
                     b.Property<bool>("Ativo")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Categoria")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<int?>("CategoriaId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("timestamp with time zone");
@@ -107,7 +132,16 @@ namespace MyPerson.Api.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoriaId");
+
                     b.HasIndex("Nome");
+
+                    b.HasOne("MyPerson.Api.Models.Categoria", "Categoria")
+                        .WithMany()
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Categoria");
 
                     b.ToTable("Produtos");
                 });

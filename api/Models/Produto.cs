@@ -20,8 +20,8 @@ public class Produto
     [Range(0, int.MaxValue, ErrorMessage = "O estoque não pode ser negativo")]
     public int Estoque { get; set; }
 
-    [StringLength(100)]
-    public string? Categoria { get; set; }
+    public int? CategoriaId { get; set; }
+    public Categoria? Categoria { get; set; }
 
     [StringLength(500)]
     public string? ImagemUrl { get; set; }

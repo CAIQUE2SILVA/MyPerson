@@ -18,8 +18,7 @@ public class CriarProdutoDto
     [Range(0, int.MaxValue, ErrorMessage = "O estoque não pode ser negativo")]
     public int Estoque { get; set; } = 0;
 
-    [StringLength(100, ErrorMessage = "A categoria deve ter no máximo 100 caracteres")]
-    public string? Categoria { get; set; }
+    public int? CategoriaId { get; set; }
 
     [StringLength(500, ErrorMessage = "A URL da imagem deve ter no máximo 500 caracteres")]
     public string? ImagemUrl { get; set; }
