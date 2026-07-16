@@ -24,6 +24,8 @@ public class CategoriasController : ControllerBase
     /// Lista todas as categorias
     /// </summary>
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(List<CategoriaResponseDto>))]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<IEnumerable<CategoriaResponseDto>>> GetCategorias()
     {
         try
@@ -51,6 +53,9 @@ public class CategoriasController : ControllerBase
     /// Busca uma categoria por ID
     /// </summary>
     [HttpGet("{id}")]
+    [ProducesResponseType(200, Type = typeof(CategoriaResponseDto))]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<CategoriaResponseDto>> GetCategoria(int id)
     {
         try
@@ -83,6 +88,9 @@ public class CategoriasController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost]
+    [ProducesResponseType(201, Type = typeof(CategoriaResponseDto))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<CategoriaResponseDto>> CriarCategoria(CriarCategoriaDto dto)
     {
         try
@@ -127,6 +135,10 @@ public class CategoriasController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPut("{id}")]
+    [ProducesResponseType(200, Type = typeof(void))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> AtualizarCategoria(int id, AtualizarCategoriaDto dto)
     {
         try
@@ -167,6 +179,10 @@ public class CategoriasController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpDelete("{id}")]
+    [ProducesResponseType(200, Type = typeof(void))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> DeletarCategoria(int id)
     {
         try
