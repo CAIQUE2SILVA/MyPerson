@@ -49,3 +49,16 @@ As regras específicas estão em `.cursor/rules/`:
 - `frontend-next.mdc` - quando edita `frontend/**/*.{ts,tsx}`
 - `admin-angular.mdc` - quando edita `admin/**/*.{ts,html}`
 - `docker-infra.mdc` - quando edita Docker/Nginx
+- `ponytail.mdc` - princípios de desenvolvimento eficiente (sempre aplica)
+
+## Histórico de Commits Recente
+
+| Hash | Tipo | Descrição |
+|------|------|-----------|
+| `c2a2427` | chore | adiciona regra de estilo ponytail |
+| `658c07b` | refactor(admin) | remove páginas home, login e rotas legadas |
+| `3ee2582` | refactor(admin) | atualiza rotas e simplifica app root |
+| `5619387` | refactor(admin) | cria feature module de dashboard |
+| `058bd70` | refactor(admin) | cria feature module de autenticação |
+
+
