@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Admin MyPerson - Angular
 
-> Arquitetura em camadas (core/shared/ui/features): ver `admin-architecture.mdc`
+> Arquitetura em camadas (core/shared/ui/pages): ver `admin-architecture.mdc`
 
 ## Stack
 
@@ -25,7 +25,7 @@ admin/src/app/
 ├── core/          # services, guards, interceptors
 ├── shared/        # models, constants, utils
 ├── ui/            # componentes reutilizáveis
-├── features/      # domínios lazy-loaded
+├── pages/         # telas lazy-loaded por domínio
 ├── app.ts         # componente raiz (standalone)
 └── app.routes.ts
 ```
@@ -58,7 +58,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/home/home').then(m => m.HomeComponent)
+    loadComponent: () => import('./pages/dashboard/dashboard/dashboard').then(m => m.Dashboard)
   },
   // lazy loading de páginas
 ];
@@ -67,23 +67,23 @@ export const routes: Routes = [
 ## Padrão de Componente de Página
 
 ```typescript
-// pages/home/home.ts
+// pages/dashboard/dashboard/dashboard.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './home.html',
-  styleUrls: ['./home.css']
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.scss']
 })
-export class HomeComponent {
+export class Dashboard {
   title = 'Painel Administrativo';
 }
 ```
 
-Template (`home.html`):
+Template (`dashboard.html`):
 ```html
 <div class="dashboard-container">
   <h1 class="dashboard-title">{{ title }}</h1>

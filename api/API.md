@@ -82,7 +82,7 @@ Verifica o status da API e conexão com o banco de dados.
   "descricao": "Camiseta 100% algodão",
   "preco": 49.90,
   "estoque": 100,
-  "categoria": "Roupas",
+  "categoriaId": 1,
   "imagemUrl": "https://exemplo.com/img.jpg",
   "ativo": true
 }
@@ -96,11 +96,41 @@ Verifica o status da API e conexão com o banco de dados.
   "descricao": "Camiseta 100% algodão",
   "preco": 49.90,
   "estoque": 100,
-  "categoria": "Roupas",
+  "categoriaId": 1,
+  "categoriaNome": "Roupas",
   "imagemUrl": "https://exemplo.com/img.jpg",
   "ativo": true,
   "dataCriacao": "2026-06-25T12:00:00Z",
   "dataAtualizacao": null
+}
+```
+
+---
+
+### Categorias
+
+| Método | Endpoint | Auth | Descrição |
+|--------|----------|------|-----------|
+| GET | `/api/categorias` | Não | Lista todas as categorias |
+| GET | `/api/categorias/{id}` | Não | Busca categoria por ID |
+| POST | `/api/categorias` | Sim | Cria nova categoria |
+| PUT | `/api/categorias/{id}` | Sim | Atualiza categoria |
+| DELETE | `/api/categorias/{id}` | Sim | Remove categoria |
+
+**Criar Categoria** — `POST /api/categorias`
+```json
+{
+  "nome": "Roupas",
+  "slug": "roupas"
+}
+```
+
+**Resposta Categoria**:
+```json
+{
+  "id": 1,
+  "nome": "Roupas",
+  "slug": "roupas"
 }
 ```
 

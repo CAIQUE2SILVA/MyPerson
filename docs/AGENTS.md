@@ -49,6 +49,7 @@ As regras específicas estão em `.cursor/rules/`:
 - `frontend-next.mdc` - quando edita `frontend/**/*.{ts,tsx}`
 - `admin-angular.mdc` - quando edita `admin/**/*.{ts,html}`
 - `docker-infra.mdc` - quando edita Docker/Nginx
+- `ponytail.mdc` - princípios de desenvolvimento eficiente (sempre aplica)
 
 ## Cursor Cloud specific instructions
 
@@ -75,8 +76,14 @@ Acesso via nginx: storefront em `http://localhost/`, API em `http://localhost/ap
 ### Lint / Build / Test
 - API: `dotnet build -c Release` em `api/`.
 - Frontend: `npm run lint` e `npm run build` em `frontend/` (passam).
-- Admin: `npm run build` / `ng serve` em `admin/` (ver problema conhecido abaixo).
+- Admin: `npm run build` / `ng serve` em `admin/`.
 
-### Problemas pré-existentes no código (não são do ambiente)
-- **Migrations EF não aplicam**: as classes em `api/Data/Migrations/*.cs` não têm o atributo `[Migration]`, então `db.Database.Migrate()` no startup encontra "No migrations" e **não cria as tabelas** `Produtos`/`Clientes`. Neste ambiente o schema foi criado manualmente via SQL (igual às migrations) e persiste no volume do Postgres do snapshot. Se recriar o banco, recrie as tabelas manualmente ou corrija o atributo das migrations.
-- **Admin não compila**: imports relativos quebrados (`app.ts` -> `./services/loading/...`, `auth.service.ts` -> `../../../services/rest/...`, `rest.service.ts` -> `../../../environments/enviroment`). O `npm install` e o `ng serve` funcionam, mas o build falha até esses caminhos serem corrigidos.
+## Histórico de Commits Recente
+
+| Hash | Tipo | Descrição |
+|------|------|-----------|
+| `c2a2427` | chore | adiciona regra de estilo ponytail |
+| `658c07b` | refactor(admin) | remove páginas home, login e rotas legadas |
+| `3ee2582` | refactor(admin) | atualiza rotas e simplifica app root |
+| `5619387` | refactor(admin) | cria feature module de dashboard |
+| `058bd70` | refactor(admin) | cria feature module de autenticação |

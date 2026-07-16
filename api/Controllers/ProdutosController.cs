@@ -37,7 +37,8 @@ public class ProdutosController : ControllerBase
                     Descricao = p.Descricao,
                     Preco = p.Preco,
                     Estoque = p.Estoque,
-                    Categoria = p.Categoria,
+                    CategoriaId = p.CategoriaId,
+                    CategoriaNome = p.Categoria != null ? p.Categoria.Nome : null,
                     ImagemUrl = p.ImagemUrl,
                     Ativo = p.Ativo,
                     DataCriacao = p.DataCriacao,
@@ -62,7 +63,9 @@ public class ProdutosController : ControllerBase
     {
         try
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await _context.Produtos
+                .Include(p => p.Categoria)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (produto == null)
             {
@@ -76,7 +79,8 @@ public class ProdutosController : ControllerBase
                 Descricao = produto.Descricao,
                 Preco = produto.Preco,
                 Estoque = produto.Estoque,
-                Categoria = produto.Categoria,
+                CategoriaId = produto.CategoriaId,
+                CategoriaNome = produto.Categoria != null ? produto.Categoria.Nome : null,
                 ImagemUrl = produto.ImagemUrl,
                 Ativo = produto.Ativo,
                 DataCriacao = produto.DataCriacao,
@@ -106,13 +110,18 @@ public class ProdutosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
+            if (dto.CategoriaId.HasValue && !await _context.Categorias.AnyAsync(c => c.Id == dto.CategoriaId.Value))
+            {
+                return BadRequest(new { message = "Categoria não encontrada" });
+            }
+
             var produto = new Produto
             {
                 Nome = dto.Nome,
                 Descricao = dto.Descricao,
                 Preco = dto.Preco,
                 Estoque = dto.Estoque,
-                Categoria = dto.Categoria,
+                CategoriaId = dto.CategoriaId,
                 ImagemUrl = dto.ImagemUrl,
                 Ativo = dto.Ativo,
                 DataCriacao = DateTime.UtcNow
@@ -121,6 +130,10 @@ public class ProdutosController : ControllerBase
             _context.Produtos.Add(produto);
             await _context.SaveChangesAsync();
 
+            produto = await _context.Produtos
+                .Include(p => p.Categoria)
+                .FirstAsync(p => p.Id == produto.Id);
+
             var produtoResponse = new ProdutoResponseDto
             {
                 Id = produto.Id,
@@ -128,7 +141,8 @@ public class ProdutosController : ControllerBase
                 Descricao = produto.Descricao,
                 Preco = produto.Preco,
                 Estoque = produto.Estoque,
-                Categoria = produto.Categoria,
+                CategoriaId = produto.CategoriaId,
+                CategoriaNome = produto.Categoria != null ? produto.Categoria.Nome : null,
                 ImagemUrl = produto.ImagemUrl,
                 Ativo = produto.Ativo,
                 DataCriacao = produto.DataCriacao,
@@ -158,6 +172,11 @@ public class ProdutosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
+            if (dto.CategoriaId.HasValue && !await _context.Categorias.AnyAsync(c => c.Id == dto.CategoriaId.Value))
+            {
+                return BadRequest(new { message = "Categoria não encontrada" });
+            }
+
             var produto = await _context.Produtos.FindAsync(id);
 
             if (produto == null)
@@ -169,7 +188,7 @@ public class ProdutosController : ControllerBase
             produto.Descricao = dto.Descricao;
             produto.Preco = dto.Preco;
             produto.Estoque = dto.Estoque;
-            produto.Categoria = dto.Categoria;
+            produto.CategoriaId = dto.CategoriaId;
             produto.ImagemUrl = dto.ImagemUrl;
             produto.Ativo = dto.Ativo;
             produto.DataAtualizacao = DateTime.UtcNow;

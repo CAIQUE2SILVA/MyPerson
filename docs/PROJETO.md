@@ -199,6 +199,16 @@ docker-compose exec postgres psql -U myperson -d myperson
 3. Teste localmente com Docker Compose
 4. Envie um pull request
 
+## Histórico de Commits Recente
+
+| Hash | Tipo | Descrição |
+|------|------|-----------|
+| `c2a2427` | chore | adiciona regra de estilo ponytail |
+| `658c07b` | refactor(admin) | remove páginas home, login e rotas legadas |
+| `3ee2582` | refactor(admin) | atualiza rotas e simplifica app root |
+| `5619387` | refactor(admin) | cria feature module de dashboard |
+| `058bd70` | refactor(admin) | cria feature module de autenticação |
+
 ## Licença
 
 Ver arquivo LICENSE para mais informações.

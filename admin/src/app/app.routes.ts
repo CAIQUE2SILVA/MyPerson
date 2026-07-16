@@ -5,7 +5,7 @@ import { authGuard, guestGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
+    loadComponent: () => import('./pages/auth/login/login').then((m) => m.Login),
     canActivate: [guestGuard],
   },
   {
@@ -15,7 +15,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./features/dashboard/dashboard.routes').then((m) => m.routes),
+        loadComponent: () => import('./pages/dashboard/dashboard/dashboard').then((m) => m.Dashboard),
       },
     ],
   },

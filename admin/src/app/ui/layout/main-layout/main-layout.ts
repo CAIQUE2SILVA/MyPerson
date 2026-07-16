@@ -35,7 +35,7 @@ export class LayoutComponent {
   }
 
   menuItems = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/home' },
+    { label: 'Dashboard', icon: 'dashboard', route: '/' },
     { label: 'Produtos', icon: 'inventory', route: '/produtos' },
     { label: 'Pedidos', icon: 'shopping_cart', route: '/pedidos' },
     { label: 'Clientes', icon: 'people', route: '/clientes' },

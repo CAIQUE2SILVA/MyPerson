@@ -27,6 +27,9 @@ public class ClientesController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(List<ClienteResponseDto>))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<IEnumerable<ClienteResponseDto>>> GetClientes()
     {
         try
@@ -59,6 +62,10 @@ public class ClientesController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet("{id}")]
+    [ProducesResponseType(200, Type = typeof(ClienteResponseDto))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<ClienteResponseDto>> GetCliente(int id)
     {
         try
@@ -94,6 +101,9 @@ public class ClientesController : ControllerBase
     /// Registra um novo cliente (público)
     /// </summary>
     [HttpPost("registro")]
+    [ProducesResponseType(201, Type = typeof(ClienteResponseDto))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<ClienteResponseDto>> RegistrarCliente(CriarClienteDto dto)
     {
         try
@@ -147,6 +157,10 @@ public class ClientesController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPut("{id}")]
+    [ProducesResponseType(200, Type = typeof(void))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> AtualizarCliente(int id, AtualizarClienteDto dto)
     {
         try
@@ -192,6 +206,10 @@ public class ClientesController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpDelete("{id}")]
+    [ProducesResponseType(200, Type = typeof(void))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> DeletarCliente(int id)
     {
         try
