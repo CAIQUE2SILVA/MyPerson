@@ -22,9 +22,9 @@ export interface StatusPedido {
 }
 
 @Component({
-  selector: 'home',
-  templateUrl: './home.html',
-  styleUrl: './home.scss',
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
   standalone: true,
   imports: [
     CommonModule,
@@ -35,10 +35,9 @@ export interface StatusPedido {
     MatChipsModule
   ],
 })
-export class Home {
+export class Dashboard {
   ultimaAtualizacao = new Date();
 
-  // KPIs
   pedidosHoje = 78;
   pedidosVariacao = '+5 acima da média';
   pedidosVariacaoPositiva = true;
@@ -51,7 +50,6 @@ export class Home {
   custoEnvioVariacao = '-5% vs. semana passada';
   custoEnvioVariacaoPositiva = false;
 
-  // Status dos pedidos para o gráfico
   statusPedidos: StatusPedido[] = [
     { status: 'Enviado', quantidade: 45, porcentagem: 58, cor: '#3f51b5' },
     { status: 'Embalado', quantidade: 18, porcentagem: 23, cor: '#4caf50' },
@@ -59,7 +57,6 @@ export class Home {
     { status: 'Cancelado', quantidade: 3, porcentagem: 4, cor: '#f44336' }
   ];
 
-  // Pedidos recentes
   pedidos: Pedido[] = [
     { id: '#100945', cliente: 'Ana Paula S.', valor: 215.90, status: 'ENVIADO', data: new Date(2024, 0, 12, 11, 30) },
     { id: '#100946', cliente: 'João P. da Silva', valor: 89.90, status: 'PENDENTE', data: new Date(2024, 0, 12, 13, 5) },
@@ -100,8 +97,6 @@ export class Home {
       currency: 'BRL'
     }).format(valor);
   }
-
-  // ... código existente ...
 
   getOffset(index: number): number {
     let offset = 0;

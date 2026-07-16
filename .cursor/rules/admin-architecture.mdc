@@ -1,6 +1,6 @@
 ---
-description: Arquitetura em camadas do Admin Angular - core, shared, ui, features
-globs: "admin/**/*.{ts,html,scss,css}"
+description: Arquitetura em camadas do Admin Angular - core, shared, ui, pages
+globs: "admin/**/*.{ts,html,scss}"
 alwaysApply: false
 ---
 
@@ -13,35 +13,40 @@ admin/src/app/
 ├── core/           # Singleton: HTTP, auth, guards, interceptors
 ├── shared/         # Models, enums, pipes, directives, constants, utils
 ├── ui/             # Componentes reutilizáveis sem lógica de negócio
-├── features/       # Domínios lazy-loaded (auth, products, dashboard…)
-├── components/     # Layout legado — migrar para ui/layout/
-└── pages/          # Páginas legado — migrar para features/
+└── pages/          # Telas lazy-loaded por domínio (auth, dashboard, products…)
+    ├── auth/
+    │   └── login/
+    └── dashboard/
+        └── dashboard/
 ```
 
 ## Camadas e Responsabilidades
 
-| Camada | Conteúdo | Regra |
-|--------|----------|-------|
-| **core** | `RestService`, `AuthService`, guards, interceptors | Importado via `app.config.ts`; nunca importar features |
-| **shared** | Models, enums, pipes, validators, `API_ENDPOINTS` | Sem dependência de features ou ui |
-| **ui** | Buttons, form wrappers, layout, data-table | Stateless; sem chamadas HTTP |
-| **features** | Pages, feature services, rotas do domínio | Lógica de negócio; usa core + shared + ui |
+| Camada       | Conteúdo                                           | Regra                                                  |
+| ------------ | -------------------------------------------------- | ------------------------------------------------------ |
+| **core**     | `RestService`, `AuthService`, guards, interceptors | Importado via `app.config.ts`; nunca importar pages |
+| **shared**   | Models, enums, pipes, validators, `API_ENDPOINTS`  | Sem dependência de pages ou ui                      |
+| **ui**       | Buttons, form wrappers, layout, data-table         | Stateless; sem chamadas HTTP                           |
+| **pages**    | Telas standalone lazy-loaded por domínio           | Lógica de negócio; usa core + shared + ui              |
 
 ## Core
 
-- **HTTP**: usar `RestService` (`core/services/rest/`), não `HttpClient` direto em features
+- **HTTP**: usar `RestService` (`core/services/rest/`), não `HttpClient` direto em pages
 - **Auth**: `AuthService` em `core/api/auth/`; token via `AuthInterceptor`
 - **Guards**: `authGuard`, `guestGuard`, `roleGuard` em `core/guards/`
 - **Notificações**: `NotificationService` (wrapper PrimeNG Toast)
 
 ```typescript
 // ✅ Feature service delega ao RestService
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class ProductService {
   private readonly rest = inject(RestService);
 
-  getProducts(page: number, limit: number): Observable<PaginationResponse<Product>> {
-    return this.rest.get<PaginationResponse<Product>>('/products', {
+  getProducts(
+    page: number,
+    limit: number,
+  ): Observable<PaginationResponse<Product>> {
+    return this.rest.get<PaginationResponse<Product>>("/products", {
       params: { page, limit },
     });
   }
@@ -62,26 +67,35 @@ export class ProductService {
 - **forms/**: `input-wrapper` com `FormControl`, mensagens de erro
 - **data-display/**: wrappers de tabela PrimeNG
 
-Componentes UI recebem `@Input`/`@Output`; não injetam feature services.
+Componentes UI recebem `@Input`/`@Output`; não injetam services de pages.
 
-## Features
+## Pages
 
-Estrutura por domínio:
+Estrutura por domínio — todas as telas ficam em `pages/`:
 
 ```
-features/products/
-├── pages/          # product-list, product-form, product-detail
-├── components/     # product-card, product-filter (específicos do domínio)
-├── services/       # product.service.ts
-└── products.routes.ts
+pages/
+├── auth/
+│   └── login/              # login.ts, login.html, login.scss
+├── dashboard/
+│   └── dashboard/
+└── products/
+    ├── product-list/
+    └── product-form/
 ```
 
-Rotas lazy com `loadComponent` ou `loadChildren` apontando para arquivo de rotas:
+Services de domínio ficam em `core/api/<dominio>/` (ex.: `core/api/products/`).
+
+Rotas lazy com `loadComponent` em `app.routes.ts`:
 
 ```typescript
 {
-  path: 'products',
-  loadChildren: () => import('./features/products/products.routes').then(m => m.routes),
+  path: 'login',
+  loadComponent: () => import('./pages/auth/login/login').then(m => m.Login),
+},
+{
+  path: '',
+  loadComponent: () => import('./pages/dashboard/dashboard/dashboard').then(m => m.Dashboard),
 }
 ```
 
@@ -105,7 +119,7 @@ Busca com debounce: `debounceTime(300)` + `distinctUntilChanged()` + `switchMap`
 
 - Reactive Forms com validadores de `shared/utils/`
 - Sempre tipar responses: `Observable<PaginationResponse<Product>>` — evitar `any`
-- Erros HTTP centralizados no interceptor; features usam `NotificationService` para feedback local
+- Erros HTTP centralizados no interceptor; pages usam `NotificationService` para feedback local
 
 ## Estilos
 
@@ -121,18 +135,18 @@ Busca com debounce: `debounceTime(300)` + `distinctUntilChanged()` + `switchMap`
 <!-- ❌ Chamar função no template — roda a cada change detection -->
 <p>{{ formatPrice(product.price) }}</p>
 <div *ngFor="let item of filterItems(list)">
-
-<!-- ❌ Criar objeto/array inline — nova referência a cada ciclo -->
-<app-card [config]="{ title: name, active: true }">
-<child [items]="items.filter(i => i.active)">
-
-<!-- ❌ Lógica de negócio no template -->
-<div *ngIf="user.role === 'ADMIN' && user.permissions.includes('DELETE')">
-
-<!-- ✅ Pipe, signal, computed ou propriedade preparada no .ts -->
-<p>{{ product.price | currency:'BRL' }}</p>
-<div *ngFor="let item of filteredItems()">
-<app-card [config]="cardConfig">
+  <!-- ❌ Criar objeto/array inline — nova referência a cada ciclo -->
+  <app-card [config]="{ title: name, active: true }">
+    <child [items]="items.filter(i => i.active)">
+      <!-- ❌ Lógica de negócio no template -->
+      <div *ngIf="user.role === 'ADMIN' && user.permissions.includes('DELETE')">
+        <!-- ✅ Pipe, signal, computed ou propriedade preparada no .ts -->
+        <p>{{ product.price | currency:'BRL' }}</p>
+        <div *ngFor="let item of filteredItems()">
+          <app-card [config]="cardConfig"></app-card>
+        </div></div></child
+  ></app-card>
+</div>
 ```
 
 - Nunca use `*ngFor` sem `trackBy`
@@ -171,9 +185,9 @@ this.id$.pipe(switchMap(id => this.service.getB(id))).subscribe(...);
 
 ### Arquitetura e Código
 
-- **HttpClient** direto em componentes ou features — usar `RestService`
+- **HttpClient** direto em componentes ou pages — usar `RestService`
 - **Lógica de negócio** em componentes `ui/` — ui é stateless
-- **Imports cruzados** entre features (ex.: `products` importando de `clients`)
+- **Imports cruzados** entre pages de domínios diferentes (ex.: `products` importando de `clients`)
 - **NgModules** — projeto usa standalone
 - **Tipo `any`** em responses HTTP, models ou `@Input`
 - **URLs de API** hardcoded — usar `shared/constants/api.constants.ts`
@@ -193,16 +207,16 @@ this.products$ = this.service.getProducts(); // OK com async pipe
 
 // ✅ tratar erro + preferir async pipe ou shareReplay(1)
 this.service.delete(id).subscribe({
-  next: () => this.notification.success('Removido'),
-  error: () => this.notification.error('Falha ao remover'),
+  next: () => this.notification.success("Removido"),
+  error: () => this.notification.error("Falha ao remover"),
 });
 ```
 
-## Checklist ao Criar Feature
+## Checklist ao Criar Página
 
 1. Model em `shared/models/`
 2. Endpoints em `shared/constants/api.constants.ts`
-3. Service em `features/<nome>/services/` usando `RestService`
-4. Page standalone com lazy route
-5. Componentes de domínio em `features/<nome>/components/`
+3. Service em `core/api/<dominio>/` usando `RestService`
+4. Page standalone em `pages/<dominio>/<nome>/` com lazy route em `app.routes.ts`
+5. Componentes específicos da tela no mesmo folder ou subpasta `components/` dentro do domínio
 6. Reutilizáveis genéricos em `ui/`

@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 
-import { AuthService } from '../../../../core/api/auth/auth.service';
+import { AuthService } from '../../../core/api/auth/auth.service';
 
 @Component({
   selector: 'app-toolbar',

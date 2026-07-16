@@ -15,7 +15,7 @@ A API é chamada em `http://localhost/api` (proxy Nginx em produção).
 
 - Login com JWT (`POST /api/auth/login`)
 - Proteção de rotas com guards de autenticação
-- Dashboard (home) com layout, toolbar e cards de resumo
+- Dashboard com layout, toolbar e cards de resumo
 - Serviços centralizados em `core/` (HTTP, auth, loading, notificações)
 
 ## Estrutura
@@ -28,14 +28,10 @@ admin/src/app/
 │   ├── guards/                # authGuard, guestGuard
 │   ├── interceptors/          # JWT no header Authorization
 │   └── services/              # RestService, Loading, Notification
-├── components/
-│   ├── layout/                # Shell autenticado (toolbar + outlet)
-│   ├── toolbar/               # Barra superior
-│   ├── login-header/          # Header da tela de login
-│   └── login-footer/          # Footer da tela de login
+├── ui/layout/                 # Shell autenticado (toolbar + outlet)
 ├── pages/
-│   ├── login/                 # Tela de login (rota pública)
-│   └── home/                  # Dashboard (rota protegida)
+│   ├── auth/login/            # Tela de login (rota pública)
+│   └── dashboard/dashboard/   # Dashboard (rota protegida)
 └── shared/models/             # DTOs compartilhados (login, etc.)
 ```
 
@@ -44,8 +40,8 @@ admin/src/app/
 | Rota (relativa a `/admin/`) | Guard      | Descrição |
 |-----------------------------|------------|-----------|
 | `login`                     | guestGuard | Formulário de login |
-| `` (vazio)                  | authGuard  | Layout + dashboard home |
-| `**`                        | —          | Redireciona para home |
+| `` (vazio)                  | authGuard  | Layout + dashboard |
+| `**`                        | —          | Redireciona para dashboard |
 
 ## Comandos
 
