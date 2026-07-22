@@ -27,12 +27,14 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.rest.post<LoginResponse>('auth/login', credentials, { showError: false }).pipe(
-      tap((response) => {
-        this.storeSession(response);
-        this.authenticated.set(true);
-      }),
-    );
+    return this.rest
+      .post<LoginResponse>(this.rest.getApiUrl('auth/login'), credentials, undefined, false, false)
+      .pipe(
+        tap((response) => {
+          this.storeSession(response);
+          this.authenticated.set(true);
+        }),
+      );
   }
 
   logout(): void {
