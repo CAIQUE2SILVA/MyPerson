@@ -78,7 +78,10 @@ MyPerson/
 │   └── nginx.conf          # Arquivo de configuração
 ├── env.example             # Exemplo de variáveis de ambiente
 ├── README.md               # Instruções de uso
-└── PROJETO.md             # Esta documentação
+└── docs/
+    ├── PROJETO.md          # Esta documentação
+    ├── AGENTS.md           # Instruções para agentes
+    └── PLANO-AUTOMACAO.md  # Plano numerado: docs, skills e CI/CD
 ```
 
 ## Variáveis de Ambiente

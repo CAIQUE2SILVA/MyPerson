@@ -9,9 +9,10 @@ Monorepo full-stack com 3 serviços principais:
 
 ## Documentação
 
-- **Arquitetura geral**: `PROJETO.md`
+- **Arquitetura geral**: `docs/PROJETO.md`
 - **API endpoints**: `api/API.md`
 - **Variáveis de ambiente**: `env.example`
+- **Plano de automação** (docs + skills + CI): `docs/PLANO-AUTOMACAO.md`
 
 ## Convenções por Serviço
 
