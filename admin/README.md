@@ -61,6 +61,13 @@ npm run serve:ssr:admin  # SSR após build
 - Estilos globais em `src/styles.css`, reset em `src/app/app.css`
 - Prettier configurado para templates Angular (`.html`)
 
+## Documentação do projeto
+
+- [docs/PROJETO.md](../docs/PROJETO.md) — arquitetura geral
+- [docs/AGENTS.md](../docs/AGENTS.md) — instruções para agentes
+- [docs/PLANO-AUTOMACAO.md](../docs/PLANO-AUTOMACAO.md) — plano de automação (docs, skills, testes, CI/CD)
+- [api/API.md](../api/API.md) — endpoints da API
+
 ## Build e Docker
 
 O `angular.json` define `baseHref: "/admin/"` para servir corretamente atrás do Nginx.
