@@ -1,18 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import { Layout } from './layout';
+import { AuthService } from '../../../core/api/auth/auth.service';
+import { LayoutComponent } from './main-layout';
 
-describe('Layout', () => {
-  let component: Layout;
-  let fixture: ComponentFixture<Layout>;
+describe('LayoutComponent', () => {
+  let component: LayoutComponent;
+  let fixture: ComponentFixture<LayoutComponent>;
+
+  const authServiceMock = {
+    logout: () => {},
+    isAuthenticated: () => false,
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Layout]
-    })
-    .compileComponents();
+      imports: [LayoutComponent, NoopAnimationsModule],
+      providers: [provideRouter([]), { provide: AuthService, useValue: authServiceMock }],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Layout);
+    fixture = TestBed.createComponent(LayoutComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
