@@ -1,269 +1,243 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/enviroment';
-import { LoadingService } from '../loading/loading.service';
 import { NotificationService } from '../notification/notification.service';
+import { ACCESS_TOKEN_KEY, StorageService } from '../storage/storage.service';
 
-export type HttpParamsValue = string | number | boolean | Date;
-
-export type HttpParamsObject = Record<
-  string,
-  HttpParamsValue | ReadonlyArray<HttpParamsValue> | null | undefined
->;
-
-export interface RestOptions {
-  headers?: HttpHeaders | Record<string, string | string[]>;
-  params?: HttpParams | HttpParamsObject;
-  showError?: boolean;
-  showSuccess?: boolean;
-  successMessage?: string;
-  showLoading?: boolean;
+export interface HttpParamsObject {
+  [key: string]: string | number | boolean | Date | Array<string | number | boolean> | null | undefined;
 }
 
-interface ApiErrorBody {
-  errors?: string[] | Record<string, string[]>;
-  message?: string;
-  title?: string;
-  detail?: string;
-}
-
-const IGNORED_PARAM_VALUES = new Set(['', 'null', 'undefined']);
-
+/**
+ * Cliente HTTP genérico para consumo da API MyPerson.
+ *
+ * Segue o padrão de um wrapper reutilizável em cima do HttpClient com:
+ * - flag `authenticate` para anexar o token Bearer;
+ * - flag `errorAlert` para exibir automaticamente uma notificação de erro;
+ * - normalização de query params (datas em ISO, remoção de valores nulos).
+ *
+ * Adaptações em relação ao exemplo mobile (Ionic/Capacitor):
+ * - o alerta de erro usa o `NotificationService` (PrimeNG) em vez do `AlertController`;
+ * - o token é lido via `StorageService` (SSR-safe) em vez do storage do Capacitor;
+ * - sem feedback háptico/sonoro (contexto web).
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class RestService {
   private readonly http = inject(HttpClient);
   private readonly notification = inject(NotificationService);
-  private readonly loading = inject(LoadingService);
-  private readonly baseUrl = environment.apiURL.replace(/\/$/, '');
+  private readonly storageService = inject(StorageService);
 
-  get<T>(path: string, options?: RestOptions): Observable<T> {
-    return this.request(
-      this.http.get<T>(this.buildUrl(path), this.buildHttpOptions(options)),
-      options,
-    );
-  }
+  get<T>(url: string, parameters?: HttpParamsObject, authenticate = true, errorAlert = true): Observable<T> {
+    let params: HttpParams | undefined = undefined;
+    let headers: { [header: string]: string } | undefined = undefined;
 
-  post<T>(path: string, body: unknown, options?: RestOptions): Observable<T> {
-    return this.request(
-      this.http.post<T>(this.buildUrl(path), body, this.buildHttpOptions(options)),
-      options,
-    );
-  }
+    parameters = this.convertDatesToIsoStrings(parameters);
 
-  put<T>(path: string, body: unknown, options?: RestOptions): Observable<T> {
-    return this.request(
-      this.http.put<T>(this.buildUrl(path), body, this.buildHttpOptions(options)),
-      options,
-    );
-  }
-
-  patch<T>(path: string, body: unknown, options?: RestOptions): Observable<T> {
-    return this.request(
-      this.http.patch<T>(this.buildUrl(path), body, this.buildHttpOptions(options)),
-      options,
-    );
-  }
-
-  delete<T>(path: string, options?: RestOptions): Observable<T> {
-    return this.request(
-      this.http.delete<T>(this.buildUrl(path), this.buildHttpOptions(options)),
-      options,
-    );
-  }
-
-  private request<T>(source: Observable<T>, options?: RestOptions): Observable<T> {
-    const showError = options?.showError ?? true;
-    const showSuccess = options?.showSuccess ?? false;
-    const showLoading = options?.showLoading ?? false;
-    const successMessage = options?.successMessage ?? 'Operação realizada com sucesso';
-
-    if (showLoading) {
-      this.loading.show();
+    if (parameters) {
+      params = this.buildHttpParams(parameters);
+      params = this.removeNullValuesFromQueryParams(params);
     }
 
-    return source.pipe(
-      tap(() => {
-        if (showSuccess) {
-          this.notification.success(successMessage);
-        }
-      }),
-      catchError((err: HttpErrorResponse) => this.handleError(err, showError)),
-      finalize(() => {
-        if (showLoading) {
-          this.loading.hide();
-        }
-      }),
-    );
+    if (authenticate) {
+      headers = this.buildAuthHeaders();
+    }
+
+    return this.http.get<T>(url, { params, headers })
+      .pipe(
+        catchError((err: HttpErrorResponse) => this.handleError(err, errorAlert)),
+      );
   }
 
-  private handleError(err: HttpErrorResponse, showError: boolean): Observable<never> {
-    const msg = this.extractErrorMessage(err);
+  put<T>(action: string, body?: unknown | FormData | string, parameters?: HttpParamsObject, authenticate = true, errorAlert = true): Observable<T> {
+    let params: HttpParams | undefined = undefined;
 
-    if (showError) {
+    parameters = this.convertDatesToIsoStrings(parameters);
+
+    if (parameters) {
+      params = new HttpParams({ fromObject: parameters as { [key: string]: string } });
+    }
+
+    const headers = authenticate ? this.buildAuthHeaders() : {};
+
+    return this.http.put<T>(action, body, { params, headers })
+      .pipe(
+        catchError((err: HttpErrorResponse) => this.handleError(err, errorAlert)),
+      );
+  }
+
+  post<T>(action: string, body?: unknown | FormData | string, parameters?: HttpParamsObject, authenticate = true, errorAlert = true): Observable<T> {
+    let params: HttpParams | undefined = undefined;
+
+    parameters = this.convertDatesToIsoStrings(parameters);
+
+    if (parameters) {
+      params = new HttpParams({ fromObject: parameters as { [key: string]: string } });
+    }
+
+    const headers = authenticate ? this.buildAuthHeaders() : {};
+
+    return this.http.post<T>(action, body, { params, headers })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          if (err.status === 200 && err.error && typeof err.error === 'object' && 'text' in err.error) {
+            return of(err.error.text as T);
+          }
+          return this.handleError(err, errorAlert);
+        }),
+      );
+  }
+
+  patch<T>(action: string, body?: unknown | FormData | string, parameters?: HttpParamsObject, authenticate = true, errorAlert = true): Observable<T> {
+    let params: HttpParams | undefined = undefined;
+
+    parameters = this.convertDatesToIsoStrings(parameters);
+
+    if (parameters) {
+      params = new HttpParams({ fromObject: parameters as { [key: string]: string } });
+    }
+
+    const headers = authenticate ? this.buildAuthHeaders() : {};
+
+    return this.http.patch<T>(action, body, { params, headers })
+      .pipe(
+        catchError((err: HttpErrorResponse) => this.handleError(err, errorAlert)),
+      );
+  }
+
+  delete<T>(action: string, authenticate = true, errorAlert = true): Observable<T> {
+    const headers: { [header: string]: string } = {
+      'Content-Type': 'application/json; charset=utf-8',
+    };
+
+    if (authenticate) {
+      Object.assign(headers, this.buildAuthHeaders());
+    }
+
+    return this.http.delete<T>(action, { headers })
+      .pipe(
+        catchError((err: HttpErrorResponse) => this.handleError(err, errorAlert)),
+      );
+  }
+
+  postText(action: string, body?: unknown | FormData | string, parameters?: HttpParamsObject, authenticate = true, errorAlert = true): Observable<string> {
+    let params: HttpParams | undefined = undefined;
+
+    parameters = this.convertDatesToIsoStrings(parameters);
+
+    if (parameters) {
+      params = new HttpParams({ fromObject: parameters as { [key: string]: string } });
+    }
+
+    const headers = authenticate ? this.buildAuthHeaders() : {};
+
+    return this.http.post(action, body, { params, headers, responseType: 'text' })
+      .pipe(
+        catchError((err: HttpErrorResponse) => this.handleError(err, errorAlert)),
+      );
+  }
+
+  /**
+   * Monta a URL completa de um endpoint.
+   * A API MyPerson não é versionada (rotas em `/api/...`), portanto apenas
+   * concatenamos a base (`environment.apiURL`) com a ação.
+   */
+  getApiUrl(action: string): string {
+    const base = environment.apiURL.replace(/\/$/, '');
+    const cleanAction = action.replace(/^\//, '');
+    return `${base}/${cleanAction}`;
+  }
+
+  private buildAuthHeaders(): { [header: string]: string } {
+    const userToken = this.storageService.get(ACCESS_TOKEN_KEY);
+    return userToken ? { authorization: `Bearer ${userToken}` } : {};
+  }
+
+  private removeNullValuesFromQueryParams(params: HttpParams): HttpParams {
+    const keys = params.keys();
+    let newParams = new HttpParams();
+
+    keys.forEach((key) => {
+      const allValues = params.getAll(key);
+      if (allValues && allValues.length > 0) {
+        allValues.forEach((value) => {
+          if (value !== null && value !== 'null' && value !== 'undefined' && value !== undefined && value !== '') {
+            newParams = newParams.append(key, value);
+          }
+        });
+      } else {
+        const value = params.get(key);
+        if (value !== null && value !== 'null' && value !== 'undefined' && value !== undefined && value !== '') {
+          newParams = newParams.set(key, value);
+        }
+      }
+    });
+
+    return newParams;
+  }
+
+  private handleError(err: HttpErrorResponse, errorAlert: boolean): Observable<never> {
+    let msg = 'Ocorreu um erro';
+
+    if (err) {
+      msg = err.message || 'Ocorreu um erro';
+
+      if (err.error != null) {
+        if (Array.isArray(err.error.errors)) {
+          msg = err.error.errors.join(', ');
+        } else if (err.error.message) {
+          msg = err.error.message;
+        } else if (typeof err.error === 'string') {
+          msg = err.error;
+        }
+      }
+    }
+
+    if (errorAlert) {
       this.notification.error(msg);
     }
 
     return throwError(() => new Error(msg));
   }
 
-  private extractErrorMessage(err: HttpErrorResponse): string {
-    const body = err.error as ApiErrorBody | string | Record<string, unknown> | null;
-
-    if (typeof body === 'string' && body.trim().length > 0) {
-      return body.trim();
-    }
-
-    if (body && typeof body === 'object') {
-      const apiError = body as ApiErrorBody;
-
-      if (Array.isArray(apiError.errors) && apiError.errors.length > 0) {
-        return apiError.errors.join(', ');
-      }
-
-      if (apiError.errors && typeof apiError.errors === 'object' && !Array.isArray(apiError.errors)) {
-        const messages = Object.values(apiError.errors)
-          .flat()
-          .filter((message): message is string => typeof message === 'string' && message.length > 0);
-
-        if (messages.length > 0) {
-          return messages.join(', ');
-        }
-      }
-
-      if (apiError.detail) {
-        return apiError.detail;
-      }
-
-      if (apiError.title) {
-        return apiError.title;
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-
-      const modelStateMessages = this.extractModelStateMessages(
-        body as Record<string, unknown>,
-      );
-      if (modelStateMessages.length > 0) {
-        return modelStateMessages.join(', ');
-      }
-    }
-
-    return err.message || 'Ocorreu um erro';
-  }
-
-  private extractModelStateMessages(body: Record<string, unknown>): string[] {
-    const skipKeys = new Set(['type', 'title', 'status', 'detail', 'instance', 'traceId', 'errors']);
-    const messages: string[] = [];
-
-    for (const [key, value] of Object.entries(body)) {
-      if (skipKeys.has(key)) {
-        continue;
-      }
-
-      if (Array.isArray(value)) {
-        messages.push(...value.filter((message): message is string => typeof message === 'string'));
-        continue;
-      }
-
-      if (typeof value === 'string') {
-        messages.push(value);
-      }
-    }
-
-    return messages;
-  }
-
-  private buildUrl(path: string): string {
-    const cleanPath = path.replace(/^\//, '');
-    return `${this.baseUrl}/${cleanPath}`;
-  }
-
-  private buildHttpOptions(
-    options?: RestOptions,
-  ): { headers?: RestOptions['headers']; params?: HttpParams } {
-    if (!options) {
-      return {};
-    }
-
-    return {
-      headers: options.headers,
-      params: this.toHttpParams(options.params),
-    };
-  }
-
-  private toHttpParams(params?: HttpParams | HttpParamsObject): HttpParams | undefined {
+  private convertDatesToIsoStrings(params?: HttpParamsObject): HttpParamsObject | undefined {
     if (!params) {
-      return undefined;
-    }
-
-    if (params instanceof HttpParams) {
       return params;
     }
 
-    const normalizedParams = this.convertDatesToIsoStrings(params);
-    let httpParams = new HttpParams();
-
-    for (const [key, value] of Object.entries(normalizedParams)) {
-      if (this.shouldSkipParam(value)) {
-        continue;
+    return Object.entries(params).reduce((acc, [key, value]) => {
+      if (value != null && typeof value === 'object' && value instanceof Date) {
+        acc[key] = value.toISOString();
+      } else {
+        acc[key] = value;
       }
+      return acc;
+    }, {} as HttpParamsObject);
+  }
 
-      if (Array.isArray(value)) {
-        for (const item of value) {
-          if (this.shouldSkipParam(item)) {
-            continue;
-          }
+  private buildHttpParams(parameters: HttpParamsObject): HttpParams {
+    let params = new HttpParams();
 
-          httpParams = httpParams.append(key, String(item));
+    Object.keys(parameters).forEach((key) => {
+      const value = parameters[key];
+
+      if (value != null && value !== undefined && value !== '') {
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            if (item != null && item !== undefined && String(item) !== '') {
+              params = params.append(key, String(item));
+            }
+          });
+        } else {
+          params = params.set(key, String(value));
         }
-        continue;
       }
+    });
 
-      httpParams = httpParams.set(key, String(value));
-    }
-
-    return httpParams;
-  }
-
-  private convertDatesToIsoStrings(params: HttpParamsObject): HttpParamsObject {
-    const result: HttpParamsObject = {};
-
-    for (const [key, value] of Object.entries(params)) {
-      if (value === null || value === undefined) {
-        continue;
-      }
-
-      if (value instanceof Date) {
-        result[key] = value.toISOString();
-        continue;
-      }
-
-      if (Array.isArray(value)) {
-        result[key] = value.map((item) => (item instanceof Date ? item.toISOString() : item));
-        continue;
-      }
-
-      result[key] = value;
-    }
-
-    return result;
-  }
-
-  private shouldSkipParam(value: unknown): boolean {
-    if (value === null || value === undefined) {
-      return true;
-    }
-
-    if (typeof value === 'string') {
-      return IGNORED_PARAM_VALUES.has(value.trim().toLowerCase());
-    }
-
-    return false;
+    return params;
   }
 }
