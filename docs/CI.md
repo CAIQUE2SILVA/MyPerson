@@ -57,6 +57,7 @@ npm run build
 
 - CI valida build, lint e teste mecânico.
 - A skill `pr-review` (`.cursor/skills/pr-review/`) valida padrão arquitetônico e lacunas de teste no diff.
+- O prompt para Cursor Bugbot / Cloud Automation está em `.cursor/automation/pr-review.md`.
 - Não aprovar PRs com CI vermelho.
 
 ## Documentação relacionada
