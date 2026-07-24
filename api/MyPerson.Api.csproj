@@ -22,5 +22,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="MyPerson.Api.Tests\**\*.cs" />
+  </ItemGroup>
+
 </Project>
 
