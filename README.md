@@ -67,9 +67,9 @@ MyPerson/
 ├── frontend/         # App Next.js (App Router)
 ├── admin/            # Painel Angular (login, dashboard)
 ├── nginx/            # Reverse proxy
+├── docs/             # PROJETO, AGENTS, plano de automação
 ├── docker-compose.yml
 ├── env.example
-├── PROJETO.md        # Documentação detalhada da arquitetura
 └── api/API.md        # Referência dos endpoints da API
 ```
 
@@ -112,6 +112,8 @@ docker-compose logs -f admin
 
 ## Documentação
 
-- [PROJETO.md](./PROJETO.md) — arquitetura, fluxo de requisições e deploy
+- [docs/PROJETO.md](./docs/PROJETO.md) — arquitetura, fluxo de requisições e deploy
+- [docs/AGENTS.md](./docs/AGENTS.md) — instruções para agentes (Cursor / Cloud)
+- [docs/PLANO-AUTOMACAO.md](./docs/PLANO-AUTOMACAO.md) — plano numerado: docs, skills, testes e CI/CD
 - [api/API.md](./api/API.md) — endpoints da API
 - [admin/README.md](./admin/README.md) — estrutura e convenções do painel Angular
