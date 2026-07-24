@@ -15,7 +15,10 @@ Monorepo full-stack com 3 serviços principais:
 - **Contrato para agentes (Claude)**: `CLAUDE.md` na raiz
 - **Variáveis de ambiente**: `env.example`
 - **Plano de automação** (docs + skills + CI + testes): `docs/PLANO-AUTOMACAO.md`
-- **Testes unitários (política):** `docs/TESTING.md` (a criar — item 6 do plano)
+- **CI/CD**: `docs/CI.md`
+- **Testes unitários (política):** `docs/TESTING.md`
+- **Padrões arquitetônicos**: `docs/ARCHITECTURE.md`
+- **Convenções**: `docs/CONVENTIONS.md`
 - **Skill revisão de testes:** `.cursor/skills/revisao-testes-unitarios/`
 
 ## Convenções por Serviço

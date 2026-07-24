@@ -16,10 +16,10 @@ A comunicação entre serviços é via HTTP, roteada pelo Nginx em `:80`.
 - [docs/AGENTS.md](./docs/AGENTS.md) — instruções específicas para agentes (Cursor / Cloud Agent)
 - [api/API.md](./api/API.md) — endpoints da API
 - [docs/PLANO-AUTOMACAO.md](./docs/PLANO-AUTOMACAO.md) — plano de automação (docs, skills, testes, CI/CD)
-- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — padrões arquitetônicos (futuro)
-- [docs/TESTING.md](./docs/TESTING.md) — política de testes (futuro)
-- [docs/CONVENTIONS.md](./docs/CONVENTIONS.md) — convenções de commits e branches (futuro)
-- [docs/CI.md](./docs/CI.md) — documentação do CI (futuro)
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — padrões arquitetônicos
+- [docs/TESTING.md](./docs/TESTING.md) — política de testes
+- [docs/CONVENTIONS.md](./docs/CONVENTIONS.md) — convenções de commits e branches
+- [docs/CI.md](./docs/CI.md) — documentação do CI/CD
 
 ## Regras duras
 
