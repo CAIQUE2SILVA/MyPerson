@@ -9,15 +9,17 @@ Cada item é independente o bastante para virar um PR pequeno; a ordem abaixo re
 |------|----------|
 | Docs | `README.md`, `docs/PROJETO.md`, `docs/AGENTS.md`, `api/API.md` — links e stack parcialmente desatualizados |
 | Rules | `.cursor/rules/` cobrindo monorepo, API, frontend, admin, docker, ponytail |
-| Skills | Só `git-commit` e `smart-commit` (sobrepostas) |
+| Skills | `git-commit`, `smart-commit` (sobrepostas) + `revisao-testes-unitarios` |
+| Testes | Quase só Admin (`*.spec.ts`); API e Frontend sem suite unitária configurada |
 | CI/CD | Sem `.github/workflows` |
 | Claude / outros agentes | Sem `CLAUDE.md` na raiz |
 
 **Objetivo final**
 
 ```text
-dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
-    → push/PR → CI (build/lint por serviço) → agent review no PR → merge
+dev → revisao-tecnica → revisao-arquitetonica (se estrutura)
+    → revisao-testes-unitarios → commit
+    → push/PR → CI (build/lint/test por serviço) → agent review no PR → merge
 ```
 
 ---
@@ -57,6 +59,7 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 **Fazer:**
 - Arquivo curto na raiz apontando para `docs/AGENTS.md`, `docs/PROJETO.md`, `api/API.md`, `.cursor/rules/`
 - Regras duras: não misturar `api/` / `frontend/` / `admin/`; HTTP via `/api`; diff mínimo (ponytail)
+- Mencionar skill `revisao-testes-unitarios` e `docs/TESTING.md` (quando existir)
 
 **Critério de pronto:** abrir o repo em Claude Code já carrega o contrato do projeto.
 
@@ -68,8 +71,8 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 
 **Fazer:**
 - Remover histórico de commits estático; instruir `git log --oneline -5`
-- Manter: visão rápida, regras, comandos Cloud Agent, lint/build por serviço
-- Linkar skills (quando existirem) e este plano
+- Manter: visão rápida, regras, comandos Cloud Agent, lint/build/**test** por serviço
+- Linkar skills (incl. `revisao-testes-unitarios`) e este plano
 
 **Critério de pronto:** AGENTS.md só contém instruções que não dependem de data.
 
@@ -89,41 +92,59 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 
 ---
 
-### 6. Criar `docs/CONVENTIONS.md`
+### 6. Criar `docs/TESTING.md` (testes unitários em todo o monorepo)
+
+**Por quê:** sem contrato único, cada serviço testa (ou não) de um jeito; a skill de revisão precisa de fonte estável.
+
+**Fazer:**
+- Política: mudança de lógica de negócio / bugfix / auth → teste unitário obrigatório
+- Por serviço:
+  - **API:** xUnit, projeto `api/*.Tests`, mocks de DbContext/deps; sem Kestrel
+  - **Frontend:** Vitest (ou Jest), `*.test.ts(x)` / `*.spec.ts(x)`; priorizar lógica pura
+  - **Admin:** Vitest via `ng test`, `*.spec.ts`; mock de `RestService`; TestBed standalone
+- O que **não** exige unitário: CSS/copy, migrations isoladas, docs, docker
+- Comandos locais iguais aos do CI
+- Link para skill `.cursor/skills/revisao-testes-unitarios/`
+
+**Critério de pronto:** agente e humano sabem o que testar e como rodar em `api` / `frontend` / `admin`.
+
+---
+
+### 7. Criar `docs/CONVENTIONS.md`
 
 **Por quê:** commits, branches e PRs precisam de uma regra única para skills e CI.
 
 **Fazer:**
-- Conventional Commits (tipos + escopos: `api`, `frontend`, `admin`, `docker`, `docs`, `ci`)
+- Conventional Commits (tipos + escopos: `api`, `frontend`, `admin`, `docker`, `docs`, `ci`, `test`)
 - Branches: `feat/…`, `fix/…`, cloud: `cursor/<nome>-aec9`
-- PR: descrição mínima, o que validar localmente antes de abrir
+- PR: descrição mínima; checklist local incluindo testes dos serviços tocados
 - Idioma: português nas mensagens do projeto
 
 **Critério de pronto:** `smart-commit` e CI de mensagem (se houver) apontam para este arquivo.
 
 ---
 
-### 7. Criar `docs/CI.md`
+### 8. Criar `docs/CI.md`
 
 **Por quê:** documentar o que o pipeline valida evita “CI vermelho misterioso”.
 
 **Fazer:**
-- Jobs por serviço e triggers (`pull_request`, `push` em `main`)
-- Path filters
+- Jobs por serviço: build, lint (onde houver) e **test**
+- Path filters e triggers (`pull_request`, `push` em `main`)
 - Como rodar localmente o mesmo comando do CI
 - O que NÃO está no CI ainda (ex.: e2e) e por quê
 
-**Critério de pronto:** criado junto ou logo após o workflow do item 14.
+**Critério de pronto:** criado junto ou logo após o workflow do item 16; completar no item 17.
 
 ---
 
-### 8. Skill `atualizar-docs` (fecha o ciclo da documentação)
+### 9. Skill `atualizar-docs` (fecha o ciclo da documentação)
 
 **Por quê:** mudança de endpoint/rota/env sem atualizar docs é regressão silenciosa.
 
 **Trigger:** “atualiza a doc”, mudança em controllers, nginx, env, rotas admin/frontend.
 
-**Fazer:** skill que, após o diff, atualiza `api/API.md` / `PROJETO.md` / `AGENTS.md` / `ARCHITECTURE.md` conforme o caso.
+**Fazer:** skill que, após o diff, atualiza `api/API.md` / `PROJETO.md` / `AGENTS.md` / `ARCHITECTURE.md` / `TESTING.md` conforme o caso.
 
 **Critério de pronto:** mudança de API no mesmo PR já inclui diff de docs quando aplicável.
 
@@ -131,7 +152,7 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 
 ## Fase B — Skills (automação local do agente)
 
-### 9. Unificar skills de commit
+### 10. Unificar skills de commit
 
 **Por quê:** `git-commit` e `smart-commit` fazem quase a mesma coisa.
 
@@ -144,7 +165,7 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 
 ---
 
-### 10. Criar skill `revisao-tecnica` (gate antes do commit)
+### 11. Criar skill `revisao-tecnica` (gate antes do commit)
 
 **Por quê:** pega build quebrado, secret e diff bagunçado antes do histórico git.
 
@@ -155,13 +176,14 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 2. Rodar lint/build só nos serviços tocados (`dotnet build`, `npm run lint` / `build`)
 3. Bloquear secrets (`.env`, tokens, connection strings)
 4. Sinalizar misturas desnecessárias de `api`+`frontend`+`admin` no mesmo commit
-5. Saída: **APROVADO** / **APROVADO COM RESSALVAS** / **BLOQUEADO** + lista de achados
+5. Encaminhar para `revisao-testes-unitarios` se o diff tocar lógica
+6. Saída: **APROVADO** / **APROVADO COM RESSALVAS** / **BLOQUEADO** + lista de achados
 
 **Critério de pronto:** agente consegue bloquear commit claramente inadequado sem o usuário pedir item a item.
 
 ---
 
-### 11. Criar skill `revisao-arquitetonica`
+### 12. Criar skill `revisao-arquitetonica`
 
 **Por quê:** CI não valida “está na pasta certa / usa RestService / não expõe entity”.
 
@@ -179,33 +201,82 @@ dev → revisao-tecnica → (revisao-arquitetonica se estrutura) → commit
 
 ---
 
-### 12. Criar skill `pr-review`
+### 13. Skill `revisao-testes-unitarios` (todo o monorepo) ✅ em andamento / criada
 
-**Por quê:** um único entrypoint para review completo de PR (técnica + arquitetura + docs).
+**Por quê:** build verde sem teste de regressão não protege auth, CRUD nem rules de negócio.
+
+**Status:** skill criada em `.cursor/skills/revisao-testes-unitarios/SKILL.md`.
+
+**Trigger:** “revisa os testes”, “unit test”, “coverage”, “tem teste?”, revisão em todo o projeto.
+
+**Checklist (resumo):**
+1. Mapear diff (ou inventário full-repo se pedido) em `api` / `frontend` / `admin`
+2. Parear produção ↔ `*Tests.cs` / `*.spec.ts` / `*.test.ts(x)`
+3. Avaliar qualidade (AAA, mocks, sem I/O real, asserts úteis)
+4. Rodar suite só nos serviços tocados
+5. Severidade: bug/auth/regra sem teste → **BLOQUEADO**
+6. Saída padronizada com veredito
+
+**Ainda falta para fechar o item:**
+- `docs/TESTING.md` (item 6)
+- Infra de testes na API e no Frontend (item 15)
+- CI rodando `dotnet test` / `npm test` (item 16)
+- `pr-review` e `revisao-tecnica` chamando esta skill (itens 11 e 14)
+- Link em `AGENTS.md` / `CLAUDE.md`
+
+**Critério de pronto:** mudança de lógica em qualquer serviço passa por esta skill antes do merge; CI executa as suites existentes.
+
+---
+
+### 14. Criar skill `pr-review`
+
+**Por quê:** um único entrypoint para review completo de PR.
 
 **Trigger:** “revisa o PR”, “review deste branch”, Bugbot/Automation no GitHub.
 
-**Fazer:** orquestrar checklists dos itens 10 e 11 + checagem se docs foram atualizados (item 8).
+**Fazer:** orquestrar:
+- `revisao-tecnica` (item 11)
+- `revisao-arquitetonica` (item 12)
+- `revisao-testes-unitarios` (item 13)
+- docs atualizados (item 9)
 
 **Critério de pronto:** prompt de Automation/Bugbot aponta só para esta skill + `docs/AGENTS.md`.
 
 ---
 
-### 13. Skills opcionais de alto ROI (depois do núcleo)
+### 15. Infraestrutura de testes unitários por serviço
+
+**Por quê:** a skill sozinha não cria runner; API e Frontend ainda não têm suite.
+
+**Fazer (PRs separados por serviço, ponytail):**
+
+| Serviço | Trabalho |
+|---------|----------|
+| `admin/` | Manter Vitest/`ng test`; melhorar specs frágeis; cobrir `RestService`, guards, auth |
+| `api/` | Criar projeto `*.Tests` (xUnit), referência à API, 1–2 testes âncora (ex.: health/auth/produto) |
+| `frontend/` | Configurar Vitest (ou Jest) + script `test`; 1–2 testes âncora de util/lógica |
+
+Não misturar e2e neste item.
+
+**Critério de pronto:** `dotnet test` / `npm test` rodam com pelo menos um teste verde em cada serviço.
+
+---
+
+### 16. Skills opcionais de alto ROI (depois do núcleo)
 
 Ordem sugerida:
 
-1. **`debug-servicos`** — subir postgres/nginx + API/frontend/admin no Cloud Agent (comandos já em `AGENTS.md`)
-2. **`novo-endpoint-api`** — scaffold controller + DTO + nota em `API.md`
-3. **`novo-page-admin`** — scaffold em `pages/<domínio>/` seguindo `admin-architecture`
+1. **`debug-servicos`** — subir postgres/nginx + API/frontend/admin no Cloud Agent
+2. **`novo-endpoint-api`** — scaffold controller + DTO + teste âncora + nota em `API.md`
+3. **`novo-page-admin`** — scaffold em `pages/<domínio>/` + `*.spec.ts` mínimo
 
-**Critério de pronto:** cada skill tem `description` com triggers claros e checklist curto (ponytail: sem boilerplate).
+**Critério de pronto:** cada skill tem `description` com triggers claros e checklist curto.
 
 ---
 
 ## Fase C — CI/CD e agents no PR
 
-### 14. Adicionar GitHub Actions CI mínimo
+### 17. Adicionar GitHub Actions CI (build + lint + test)
 
 **Por quê:** hoje não há rede de segurança mecânica no remoto.
 
@@ -213,47 +284,49 @@ Ordem sugerida:
 
 | Job | Comandos | Path filter |
 |-----|----------|-------------|
-| `api` | `dotnet restore` + `dotnet build -c Release` | `api/**` |
-| `frontend` | `npm ci` + `npm run lint` + `npm run build` | `frontend/**` |
-| `admin` | `npm ci` + `npm run build` | `admin/**` |
+| `api` | `dotnet restore` + `dotnet build -c Release` + `dotnet test` | `api/**` |
+| `frontend` | `npm ci` + `npm run lint` + `npm test` + `npm run build` | `frontend/**` |
+| `admin` | `npm ci` + `npm test` + `npm run build` | `admin/**` |
 
-Triggers: `pull_request`, `push` em `main`. Jobs em paralelo.
+Triggers: `pull_request`, `push` em `main`. Jobs em paralelo.  
+Se um serviço ainda não tiver suite (antes do item 15), o job de test pode ser `continue-on-error` temporário — remover assim que o item 15 fechar.
 
-**Critério de pronto:** PR que quebra build do serviço tocado fica vermelho.
-
----
-
-### 15. Documentar o pipeline (`docs/CI.md` — item 7) e linkar no README
-
-**Fazer:** após o workflow existir, preencher `docs/CI.md` e linkar em `README` + `AGENTS.md`.
+**Critério de pronto:** PR que quebra build **ou teste** do serviço tocado fica vermelho.
 
 ---
 
-### 16. Endurecimentos leves de CI (segunda leva)
+### 18. Documentar o pipeline (`docs/CI.md` — item 8) e linkar no README
+
+**Fazer:** após o workflow existir, preencher `docs/CI.md` (incluir jobs de test) e linkar em `README` + `AGENTS.md` + `TESTING.md`.
+
+---
+
+### 19. Endurecimentos leves de CI (segunda leva)
 
 Só depois do CI básico estável:
 
 1. Cache NuGet / `node_modules`
 2. Job opcional de build Docker em `main` (ou `workflow_dispatch`)
-3. Check de links de docs (falha se README apontar arquivo morto)
-4. (Opcional) validação de Conventional Commits no título do PR
+3. Check de links de docs
+4. (Opcional) Conventional Commits no título do PR
+5. (Opcional) gate de coverage mínimo só em pastas críticas (`api` auth, `admin` core) — sem meta ilusória de 100%
 
 ---
 
-### 17. Ligar agent review no PR
+### 20. Ligar agent review no PR
 
-**Por quê:** CI valida build; agente valida padrão do monorepo.
+**Por quê:** CI valida build/test mecânico; agente valida padrão + lacunas de teste no diff.
 
 **Fazer:**
 - Cursor Bugbot e/ou Cloud Automation no `pull_request`
-- Prompt fixo: ler `docs/AGENTS.md`, `docs/ARCHITECTURE.md`, skill `pr-review`
+- Prompt fixo: `docs/AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/TESTING.md`, skill `pr-review` (inclui testes)
 - Escopo: conformidade com monorepo — não “estilo genérico”
 
-**Critério de pronto:** todo PR recebe comentário de review alinhado às rules do projeto.
+**Critério de pronto:** todo PR recebe review alinhado às rules e à política de testes.
 
 ---
 
-### 18. Produção / deploy (só quando CI de PR estiver maduro)
+### 21. Produção / deploy (só quando CI de PR estiver maduro)
 
 **Fazer (quando fizer sentido):**
 - Workflow separado `deploy.yml` (manual ou tag) usando `docker-compose.prod.yml`
@@ -273,28 +346,32 @@ Só depois do CI básico estável:
 | 3 | Criar `CLAUDE.md` | Docs |
 | 4 | Enxugar `AGENTS.md` | Docs |
 | 5 | Criar `ARCHITECTURE.md` | Docs |
-| 6 | Criar `CONVENTIONS.md` | Docs |
-| 7 | Criar `CI.md` (esqueleto; completar no 15) | Docs |
-| 8 | Skill `atualizar-docs` | Docs ↔ Skills |
-| 9 | Unificar commit skills | Skills |
-| 10 | Skill `revisao-tecnica` | Skills |
-| 11 | Skill `revisao-arquitetonica` | Skills |
-| 12 | Skill `pr-review` | Skills |
-| 13 | Skills opcionais (debug / scaffold) | Skills |
-| 14 | GitHub Actions CI mínimo | CI |
-| 15 | Completar `CI.md` + links | Docs + CI |
-| 16 | Cache, Docker build, checks extras | CI |
-| 17 | Agent review no PR | CI + Agents |
-| 18 | Deploy prod (quando maduro) | CI |
+| 6 | Criar `TESTING.md` | Docs / Testes |
+| 7 | Criar `CONVENTIONS.md` | Docs |
+| 8 | Criar `CI.md` (esqueleto; completar no 18) | Docs |
+| 9 | Skill `atualizar-docs` | Docs ↔ Skills |
+| 10 | Unificar commit skills | Skills |
+| 11 | Skill `revisao-tecnica` | Skills |
+| 12 | Skill `revisao-arquitetonica` | Skills |
+| 13 | Skill `revisao-testes-unitarios` | Skills / Testes |
+| 14 | Skill `pr-review` | Skills |
+| 15 | Infra de testes (api + frontend + reforço admin) | Testes |
+| 16 | Skills opcionais (debug / scaffold + teste) | Skills |
+| 17 | GitHub Actions CI (build/lint/test) | CI |
+| 18 | Completar `CI.md` + links | Docs + CI |
+| 19 | Endurecimentos CI (+ coverage opcional) | CI |
+| 20 | Agent review no PR | CI + Agents |
+| 21 | Deploy prod (quando maduro) | CI |
 
 ---
 
 ## Princípios (ponytail)
 
-- Um PR por item ou por bloco pequeno (ex.: 1–4 docs; 10+11 skills; 14 CI).
+- Um PR por item ou por bloco pequeno (ex.: 1–4 docs; 11–13 skills; 15 por serviço; 17 CI).
 - Não inventar abstração de “plataforma de agents” — skills + docs + Actions bastam.
-- Agent não substitui CI: CI = mecânico; skill/agent = julgamento de padrão.
+- Agent não substitui CI: CI = mecânico; skill/agent = julgamento de padrão e de lacuna de teste.
 - Reutilizar `.cursor/rules/` existentes; docs novas só consolidam, não contradizem.
+- Teste unitário > e2e neste plano; e2e fica explícito como fora de escopo até o núcleo estar estável.
 
 ---
 
@@ -311,16 +388,19 @@ Só depois do CI básico estável:
 - [ ] 3 CLAUDE.md
 - [ ] 4 AGENTS.md
 - [ ] 5 ARCHITECTURE.md
-- [ ] 6 CONVENTIONS.md
-- [ ] 7 CI.md (esqueleto)
-- [ ] 8 Skill atualizar-docs
-- [ ] 9 Unificar commits
-- [ ] 10 revisao-tecnica
-- [ ] 11 revisao-arquitetonica
-- [ ] 12 pr-review
-- [ ] 13 Skills opcionais
-- [ ] 14 CI Actions
-- [ ] 15 CI.md completo
-- [ ] 16 Endurecimentos CI
-- [ ] 17 Agent no PR
-- [ ] 18 Deploy
+- [ ] 6 TESTING.md
+- [ ] 7 CONVENTIONS.md
+- [ ] 8 CI.md (esqueleto)
+- [ ] 9 Skill atualizar-docs
+- [ ] 10 Unificar commits
+- [ ] 11 revisao-tecnica
+- [ ] 12 revisao-arquitetonica
+- [x] 13 revisao-testes-unitarios (skill criada; faltam TESTING.md + infra + CI)
+- [ ] 14 pr-review
+- [ ] 15 Infra de testes por serviço
+- [ ] 16 Skills opcionais
+- [ ] 17 CI Actions (com test)
+- [ ] 18 CI.md completo
+- [ ] 19 Endurecimentos CI
+- [ ] 20 Agent no PR
+- [ ] 21 Deploy

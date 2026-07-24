@@ -12,7 +12,9 @@ Monorepo full-stack com 3 serviços principais:
 - **Arquitetura geral**: `docs/PROJETO.md`
 - **API endpoints**: `api/API.md`
 - **Variáveis de ambiente**: `env.example`
-- **Plano de automação** (docs + skills + CI): `docs/PLANO-AUTOMACAO.md`
+- **Plano de automação** (docs + skills + CI + testes): `docs/PLANO-AUTOMACAO.md`
+- **Testes unitários (política):** `docs/TESTING.md` (a criar — item 6 do plano)
+- **Skill revisão de testes:** `.cursor/skills/revisao-testes-unitarios/`
 
 ## Convenções por Serviço
 
@@ -75,9 +77,10 @@ cd admin && npx ng serve --host 0.0.0.0 --port 4200
 Acesso via nginx: storefront em `http://localhost/`, API em `http://localhost/api`, Swagger em `http://localhost/api/swagger`, admin em `http://localhost/admin/`. O arquivo `.env` da raiz já está preenchido com valores de dev.
 
 ### Lint / Build / Test
-- API: `dotnet build -c Release` em `api/`.
-- Frontend: `npm run lint` e `npm run build` em `frontend/` (passam).
-- Admin: `npm run build` / `ng serve` em `admin/`.
+- API: `dotnet build -c Release` em `api/` (suite unitária: a criar — ver plano item 15; depois `dotnet test`).
+- Frontend: `npm run lint` e `npm run build` em `frontend/` (suite unitária: a criar — item 15).
+- Admin: `npm run build` / `ng serve` em `admin/`; testes: `npm test` (`*.spec.ts`).
+- Antes de commit com lógica: usar skill `revisao-testes-unitarios`.
 
 ## Histórico de Commits Recente
 

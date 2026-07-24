@@ -81,8 +81,10 @@ MyPerson/
 └── docs/
     ├── PROJETO.md          # Esta documentação
     ├── AGENTS.md           # Instruções para agentes
-    └── PLANO-AUTOMACAO.md  # Plano numerado: docs, skills e CI/CD
+    ├── PLANO-AUTOMACAO.md  # Plano: docs, skills, testes unitários e CI/CD
+    └── TESTING.md          # Política de testes (a criar — item 6 do plano)
 ```
+
 
 ## Variáveis de Ambiente
 

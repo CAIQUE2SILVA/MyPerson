@@ -114,6 +114,6 @@ docker-compose logs -f admin
 
 - [docs/PROJETO.md](./docs/PROJETO.md) — arquitetura, fluxo de requisições e deploy
 - [docs/AGENTS.md](./docs/AGENTS.md) — instruções para agentes (Cursor / Cloud)
-- [docs/PLANO-AUTOMACAO.md](./docs/PLANO-AUTOMACAO.md) — plano numerado: docs, skills e CI/CD
+- [docs/PLANO-AUTOMACAO.md](./docs/PLANO-AUTOMACAO.md) — plano numerado: docs, skills, testes e CI/CD
 - [api/API.md](./api/API.md) — endpoints da API
 - [admin/README.md](./admin/README.md) — estrutura e convenções do painel Angular
