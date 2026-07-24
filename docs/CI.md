@@ -46,12 +46,28 @@ npm test -- --watch=false
 npm run build
 ```
 
+## Deploy
+
+O workflow `.github/workflows/deploy.yml` é acionado manualmente (`workflow_dispatch`) ou por tags `v*`. Ele:
+
+1. Copia `.env.prod.example` para `.env`
+2. Builda as imagens com `docker-compose -f docker-compose.prod.yml build`
+3. (Placeholder) Push para registry e deploy remoto — requer secrets configurados
+
+Secrets necessários (adicionar no GitHub, nunca no repo):
+
+- `REGISTRY_URL`
+- `REGISTRY_USERNAME`
+- `REGISTRY_PASSWORD`
+- `DEPLOY_HOST`
+- `DEPLOY_USER`
+- `DEPLOY_SSH_KEY`
+
 ## O que não está no CI (ainda)
 
 - **e2e/browser**: fora de escopo até o núcleo de testes unitários estar estável.
-- **Deploy automático**: manual via `docker-compose.prod.yml` até o CI de PR amadurecer.
 - **Coverage gate**: opcional, só em pastas críticas, após estabilidade.
-- **Cache de NuGet / `node_modules`**: pode ser adicionado como endurecimento leve (item 19 do plano).
+- **Conventional Commits no título do PR**: opcional.
 
 ## Integração com review de agente
 

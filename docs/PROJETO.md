@@ -137,6 +137,10 @@ Considerações:
 - Use variáveis de ambiente seguras (nunca commitar `.env`)
 - Configure CORS adequadamente
 
+### Deploy via GitHub Actions
+
+O workflow `.github/workflows/deploy.yml` builda as imagens de produção. Para push/deploy automático, configure os secrets no GitHub e descomente os passos no workflow. Veja mais em [docs/CI.md](./CI.md).
+
 ## Documentação Relacionada
 
 - [api/API.md](../api/API.md) — endpoints da API
