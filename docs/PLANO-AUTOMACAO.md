@@ -383,24 +383,24 @@ Só depois do CI básico estável:
 
 ### Checklist de progresso
 
-- [ ] 1 Links
-- [ ] 2 PROJETO.md
-- [ ] 3 CLAUDE.md
-- [ ] 4 AGENTS.md
-- [ ] 5 ARCHITECTURE.md
-- [ ] 6 TESTING.md
-- [ ] 7 CONVENTIONS.md
-- [ ] 8 CI.md (esqueleto)
-- [ ] 9 Skill atualizar-docs
-- [ ] 10 Unificar commits
-- [ ] 11 revisao-tecnica
-- [ ] 12 revisao-arquitetonica
-- [x] 13 revisao-testes-unitarios (skill criada; faltam TESTING.md + infra + CI)
-- [ ] 14 pr-review
-- [ ] 15 Infra de testes por serviço
-- [ ] 16 Skills opcionais
-- [ ] 17 CI Actions (com test)
-- [ ] 18 CI.md completo
-- [ ] 19 Endurecimentos CI
-- [ ] 20 Agent no PR
-- [ ] 21 Deploy
+- [x] 1 Links
+- [x] 2 PROJETO.md
+- [x] 3 CLAUDE.md
+- [x] 4 AGENTS.md
+- [x] 5 ARCHITECTURE.md
+- [x] 6 TESTING.md
+- [x] 7 CONVENTIONS.md
+- [x] 8 CI.md (esqueleto)
+- [x] 9 Skill atualizar-docs
+- [x] 10 Unificar commits
+- [x] 11 revisao-tecnica
+- [x] 12 revisao-arquitetonica
+- [x] 13 revisao-testes-unitarios (skill atualizada; TESTING.md + infra + CI prontos)
+- [x] 14 pr-review
+- [x] 15 Infra de testes por serviço
+- [x] 16 Skills opcionais
+- [x] 17 CI Actions (com test)
+- [x] 18 CI.md completo
+- [x] 19 Endurecimentos CI
+- [x] 20 Agent no PR
+- [x] 21 Deploy

@@ -14,6 +14,10 @@ Garante que mudanças de lógica em **qualquer serviço** do monorepo tenham tes
 - Como parte de `pr-review` / gate de qualidade
 - Quando o usuário pedir revisão em todo o projeto (rodar por serviço tocado)
 
+## Base de regras
+
+A política completa de testes está em [docs/TESTING.md](../../../docs/TESTING.md). Use este arquivo como checklist operacional.
+
 ## Stack esperada por serviço
 
 | Serviço | Runner (alvo) | Convenção de arquivos | Comando |

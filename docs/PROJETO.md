@@ -2,219 +2,153 @@
 
 ## Visão Geral
 
-O MyPerson é uma aplicação web full-stack desenvolvida com arquitetura de microserviços utilizando Docker Compose. O projeto é composto por múltiplos serviços que trabalham em conjunto para fornecer uma solução completa de gerenciamento.
+O MyPerson é uma aplicação web full-stack com três serviços independentes orquestrados por Docker Compose. A comunicação entre frontend/admin e a API é sempre via HTTP, roteada pelo Nginx.
 
 ## Arquitetura
 
 ### Serviços
 
-#### 1. Nginx (Reverse Proxy)
-- **Porta**: 80 (externa)
-- **Função**: Atua como reverse proxy, roteando requisições para os serviços apropriados
-- **Roteamento**:
-  - `/api/*` → API ASP.NET Core
-  - `/admin/*` → Painel Administrativo Angular
-  - `/` → Frontend React
+| Serviço | Tecnologia | Porta interna | Rota Nginx |
+|---------|------------|---------------|------------|
+| API | ASP.NET Core 8.0 | 5000 | `/api/*` |
+| Frontend | Next.js 16 + React 19 | 3000 | `/` |
+| Admin | Angular 21 + Material/CDK | 4200 | `/admin/*` |
+| Nginx | Reverse proxy | 80 | — |
+| PostgreSQL | Banco de dados | 5432 | — |
 
-#### 2. API (Backend)
-- **Tecnologia**: ASP.NET Core (C#)
-- **Porta**: 5000 (interna)
-- **Função**: Fornece endpoints RESTful para comunicação com o banco de dados
-- **Banco de Dados**: PostgreSQL
+### Fluxo de Requisições
 
-#### 3. PostgreSQL (Banco de Dados)
-- **Porta**: 5432
-- **Função**: Armazena os dados da aplicação
-- **Persistência**: Volume Docker para garantir persistência dos dados
-
-#### 4. Frontend
-- **Tecnologia**: React
-- **Porta**: 3000 (interna), servida via Nginx na porta 80
-- **Função**: Interface do usuário principal da aplicação
-
-#### 5. Admin (Painel Administrativo)
-- **Tecnologia**: Angular
-- **Porta**: 4200 (interna), servida via Nginx em `/admin`
-- **Função**: Interface administrativa para gerenciamento do sistema
-
-## Fluxo de Requisições
-
-1. **Requisição do Cliente** → Nginx (porta 80)
-2. **Nginx analisa o caminho**:
-   - Se `/api/*` → Encaminha para API (porta 5000)
-   - Se `/admin/*` → Encaminha para Admin (porta 4200)
-   - Se `/` → Encaminha para Frontend (porta 3000)
-3. **API processa requisições** → Consulta/atualiza PostgreSQL
-4. **Resposta** → Retorna através do Nginx para o cliente
-
-## Tecnologias Utilizadas
-
-### Backend
-- **ASP.NET Core 8.0**: Framework para desenvolvimento da API
-- **C#**: Linguagem de programação
-- **PostgreSQL 16**: Sistema de gerenciamento de banco de dados relacional
-
-### Frontend
-- **React**: Biblioteca JavaScript para construção da interface do usuário
-- **Angular**: Framework para construção do painel administrativo
-
-### Infraestrutura
-- **Docker**: Containerização dos serviços
-- **Docker Compose**: Orquestração dos containers
-- **Nginx**: Servidor web e reverse proxy
+1. Cliente → Nginx (`:80`)
+2. Nginx encaminha conforme o caminho:
+   - `/api/*` → API (`:5000`)
+   - `/admin/*` → Admin (`:4200`)
+   - `/` → Frontend (`:3000`)
+3. API consulta/atualiza o PostgreSQL
+4. Resposta retorna pelo Nginx para o cliente
 
 ## Estrutura de Diretórios
 
 ```
 MyPerson/
-├── docker-compose.yml      # Configuração dos serviços
-├── api/                    # Projeto ASP.NET Core
-│   └── Dockerfile          # Imagem da API
-├── frontend/               # Projeto React
-│   └── Dockerfile          # Imagem do Frontend
-├── admin/                  # Projeto Angular
-│   └── Dockerfile          # Imagem do Admin
-├── nginx/                  # Configuração do Nginx
-│   └── nginx.conf          # Arquivo de configuração
-├── env.example             # Exemplo de variáveis de ambiente
-├── README.md               # Instruções de uso
-└── docs/
-    ├── PROJETO.md          # Esta documentação
-    ├── AGENTS.md           # Instruções para agentes
-    ├── PLANO-AUTOMACAO.md  # Plano: docs, skills, testes unitários e CI/CD
-    └── TESTING.md          # Política de testes (a criar — item 6 do plano)
+├── api/                    # Backend ASP.NET Core 8
+├── frontend/               # Next.js 16 (App Router)
+├── admin/                  # Angular 21 (standalone components)
+├── nginx/                  # Configuração do reverse proxy
+├── .cursor/                # Rules e skills do Cursor
+│   ├── rules/
+│   └── skills/
+├── docs/                   # Documentação do projeto
+│   ├── PROJETO.md          # Esta documentação
+│   ├── AGENTS.md           # Instruções para agentes
+│   ├── PLANO-AUTOMACAO.md  # Plano de automação (docs, skills, testes, CI/CD)
+│   ├── ARCHITECTURE.md     # Padrões arquitetônicos (a criar — item 5 do plano)
+│   ├── TESTING.md          # Política de testes (a criar — item 6 do plano)
+│   ├── CONVENTIONS.md      # Convenções de commits/branches (a criar — item 7)
+│   └── CI.md               # Documentação do CI (a criar — item 8/18)
+├── docker-compose.yml      # Desenvolvimento
+├── docker-compose.prod.yml # Produção
+├── env.example             # Variáveis de ambiente
+└── README.md               # Instruções de uso rápido
 ```
 
+## Tecnologias Utilizadas
+
+- **Backend**: ASP.NET Core 8, C#, EF Core, PostgreSQL 16, JWT Auth
+- **Frontend**: Next.js 16, React 19, TypeScript 5.9, Tailwind 4
+- **Admin**: Angular 21, Material/CDK, Tailwind 4, SSR com Express
+- **Infraestrutura**: Docker, Docker Compose, Nginx
 
 ## Variáveis de Ambiente
 
-### PostgreSQL
-- `POSTGRES_USER`: Usuário do banco de dados (padrão: myperson)
-- `POSTGRES_PASSWORD`: Senha do banco de dados (padrão: myperson123)
-- `POSTGRES_DB`: Nome do banco de dados (padrão: myperson)
+Copie `env.example` para `.env` na raiz e ajuste conforme o ambiente:
 
-### API
-- `ASPNETCORE_ENVIRONMENT`: Ambiente de execução (Development/Production)
-- `ASPNETCORE_URLS`: URL de escuta da API
-- `ConnectionStrings__DefaultConnection`: String de conexão com o PostgreSQL
+| Variável | Descrição | Padrão de dev |
+|----------|-----------|---------------|
+| `POSTGRES_USER` | Usuário do PostgreSQL | `myperson` |
+| `POSTGRES_PASSWORD` | Senha do PostgreSQL | `myperson123` |
+| `POSTGRES_DB` | Nome do banco | `myperson` |
+| `JWT_KEY` | Chave secreta JWT (mín. 32 caracteres) | — |
+| `JWT_ISSUER` | Emissor do token | `MyPerson` |
+| `JWT_AUDIENCE` | Audiência do token | `MyPersonUsers` |
+| `AUTH_ADMIN_USER` | Usuário admin | `admin` |
+| `AUTH_ADMIN_PASSWORD` | Senha admin | — |
 
-## Desenvolvimento
+## Como Executar
 
-### Iniciando o Projeto
-
-1. Clone o repositório
-2. Copie `env.example` para `.env` e configure as variáveis
-3. Execute `docker-compose up -d` para iniciar todos os serviços
-4. Acesse http://localhost para o frontend
-5. Acesse http://localhost/admin para o painel administrativo
-6. Acesse http://localhost/api para testar a API
-
-### Desenvolvimento Local
-
-Para desenvolvimento local sem Docker:
-
-- **API**: Execute `dotnet run` na pasta `api/`
-- **Frontend**: Execute `npm start` na pasta `frontend/`
-- **Admin**: Execute `ng serve` na pasta `admin/`
-- **PostgreSQL**: Configure uma instância local ou use Docker apenas para o banco
-
-### Build das Imagens
+### Docker Compose (recomendado)
 
 ```bash
-# Build de todos os serviços
-docker-compose build
+# Iniciar todos os serviços
+docker-compose up -d
 
-# Build de um serviço específico
-docker-compose build api
-docker-compose build frontend
-docker-compose build admin
+# Rebuild após mudanças
+docker-compose up -d --build
+
+# Parar
+docker-compose down
 ```
 
-### Logs
+### Desenvolvimento Local (sem Docker)
+
+Veja os comandos específicos de cada serviço em `docs/AGENTS.md` (seção **Cursor Cloud specific instructions**).
+
+Resumo:
+- **API**: `dotnet run` em `api/`
+- **Frontend**: `npm run dev` em `frontend/`
+- **Admin**: `npm start` em `admin/`
+- **PostgreSQL**: instância local na porta 5432
+- **Nginx**: proxy local apontando para as portas dos serviços
+
+## Acesso
+
+| Aplicação | URL (Docker/Nginx) |
+|-----------|--------------------|
+| Frontend | http://localhost |
+| Admin | http://localhost/admin |
+| API | http://localhost/api |
+| Swagger | http://localhost/api/swagger (apenas Development) |
+
+## Comandos Úteis
 
 ```bash
-# Ver logs de todos os serviços
-docker-compose logs -f
-
-# Ver logs de um serviço específico
+# Logs
 docker-compose logs -f api
 docker-compose logs -f frontend
 docker-compose logs -f admin
+
+# Reiniciar um serviço específico
+docker-compose restart api
+
+# Parar e remover volumes
+docker-compose down -v
 ```
 
 ## Produção
 
-### Considerações para Produção
-
-1. **Segurança**:
-   - Altere todas as senhas padrão
-   - Configure HTTPS no Nginx
-   - Use variáveis de ambiente seguras
-   - Configure CORS adequadamente
-
-2. **Performance**:
-   - Configure cache no Nginx
-   - Otimize as imagens Docker
-   - Configure connection pooling no PostgreSQL
-
-3. **Monitoramento**:
-   - Configure health checks
-   - Implemente logging centralizado
-   - Configure alertas
-
-### Deploy
-
-1. Configure variáveis de ambiente de produção
-2. Build das imagens: `docker-compose build`
-3. Inicie os serviços: `docker-compose up -d`
-4. Configure domínio e SSL no Nginx
-
-## Troubleshooting
-
-### Problemas Comuns
-
-1. **Porta já em uso**: Verifique se as portas 80, 5000, 3000, 4200 ou 5432 estão disponíveis
-2. **Erro de conexão com banco**: Verifique se o PostgreSQL está rodando e as credenciais estão corretas
-3. **Build falha**: Verifique se todos os arquivos necessários estão presentes nos diretórios
-
-### Comandos Úteis
+Use `docker-compose.prod.yml`:
 
 ```bash
-# Reiniciar um serviço específico
-docker-compose restart api
-
-# Parar e remover containers
-docker-compose down
-
-# Parar, remover containers e volumes
-docker-compose down -v
-
-# Ver status dos serviços
-docker-compose ps
-
-# Executar comandos dentro de um container
-docker-compose exec api bash
-docker-compose exec postgres psql -U myperson -d myperson
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## Contribuindo
+Considerações:
+- Altere todas as senhas padrão
+- Configure HTTPS no Nginx
+- Use variáveis de ambiente seguras (nunca commitar `.env`)
+- Configure CORS adequadamente
 
-1. Crie uma branch para sua feature
-2. Faça suas alterações
-3. Teste localmente com Docker Compose
-4. Envie um pull request
+### Deploy via GitHub Actions
 
-## Histórico de Commits Recente
+O workflow `.github/workflows/deploy.yml` builda as imagens de produção. Para push/deploy automático, configure os secrets no GitHub e descomente os passos no workflow. Veja mais em [docs/CI.md](./CI.md).
 
-| Hash | Tipo | Descrição |
-|------|------|-----------|
-| `c2a2427` | chore | adiciona regra de estilo ponytail |
-| `658c07b` | refactor(admin) | remove páginas home, login e rotas legadas |
-| `3ee2582` | refactor(admin) | atualiza rotas e simplifica app root |
-| `5619387` | refactor(admin) | cria feature module de dashboard |
-| `058bd70` | refactor(admin) | cria feature module de autenticação |
+## Documentação Relacionada
+
+- [api/API.md](../api/API.md) — endpoints da API
+- [docs/AGENTS.md](./AGENTS.md) — instruções para agentes
+- [docs/PLANO-AUTOMACAO.md](./PLANO-AUTOMACAO.md) — plano de automação
+- [docs/ARCHITECTURE.md](./ARCHITECTURE.md) — padrões arquitetônicos (futuro)
+- [docs/TESTING.md](./TESTING.md) — política de testes (futuro)
 
 ## Licença
 
-Ver arquivo LICENSE para mais informações.
-
+Ver arquivo [LICENSE](../LICENSE) para mais informações.

@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Generate commit messages by analyzing the actual diff — never invent or assume changes that are not in the staged files.
 
+Follow the project conventions in [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md): Conventional Commits, Portuguese, monorepo scopes (`api`, `frontend`, `admin`, `docker`, `docs`, `ci`, `test`).
+
 ## Workflow
 
 ### Step 1: Gather context

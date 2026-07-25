@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend MyPerson
 
-## Getting Started
+Loja pública em **Next.js 16** (App Router) + **React 19** + **TypeScript 5.9** + **Tailwind 4**.
 
-First, run the development server:
+## Acesso
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+| Ambiente | URL |
+|----------|-----|
+| Docker/Nginx | http://localhost |
+| Dev local (`npm run dev`) | http://localhost:3000 |
+
+A API é chamada em `http://localhost/api` (via Nginx em produção/Docker).
+
+## Stack
+
+- **Next.js**: 16.2.9 (App Router)
+- **React**: 19.2.0
+- **TypeScript**: 5.9.3
+- **Tailwind CSS**: 4.x
+- **ESLint**: 9.x com config Next
+
+## Estrutura
+
+```
+frontend/src/
+├── app/                    # App Router
+│   ├── page.tsx           # Página inicial /
+│   ├── layout.tsx         # Layout raiz
+│   ├── globals.css        # Estilos globais
+│   └── (outras rotas)/    # /produtos, etc.
+└── components/
+    ├── layout/            # Header, Footer
+    └── sections/          # HeroSection, FeaturedProducts, etc.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Comandos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install          # dependências
+npm run dev          # dev server (porta 3000)
+npm run build        # build de produção
+npm run lint         # verificar ESLint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Convenções
 
-## Learn More
+- Server Components por padrão; Client Components só quando precisar de estado/eventos.
+- Estilização com Tailwind; não misturar CSS modules.
+- Fetch de dados em Server Components, quando possível.
+- Chamar a API em `http://localhost/api/{endpoint}`.
 
-To learn more about Next.js, take a look at the following resources:
+## Documentação do projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [docs/PROJETO.md](../docs/PROJETO.md) — arquitetura geral
+- [docs/AGENTS.md](../docs/AGENTS.md) — instruções para agentes
+- [docs/PLANO-AUTOMACAO.md](../docs/PLANO-AUTOMACAO.md) — plano de automação (docs, skills, testes, CI/CD)
+- [api/API.md](../api/API.md) — endpoints da API
