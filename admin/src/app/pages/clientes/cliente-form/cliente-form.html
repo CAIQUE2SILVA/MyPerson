@@ -1,0 +1,56 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ titulo }}</h1>
+    <a mat-button routerLink="/clientes">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </a>
+  </div>
+
+  <mat-card>
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome" maxlength="200" />
+        @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+        <mat-error>Nome é obrigatório.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail</mat-label>
+        <input matInput type="email" formControlName="email" maxlength="200" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <mat-error>E-mail válido é obrigatório.</mat-error>
+        }
+      </mat-form-field>
+
+      @if (modoCriacao) {
+      <mat-form-field appearance="outline">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="senha" minlength="6" maxlength="100" />
+        @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
+        <mat-error>Senha deve ter pelo menos 6 caracteres.</mat-error>
+        }
+      </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone</mat-label>
+        <input matInput formControlName="telefone" maxlength="20" />
+      </mat-form-field>
+
+      <mat-checkbox formControlName="ativo">Ativo</mat-checkbox>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="carregando()">
+          @if (carregando()) {
+          <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+          }
+          Salvar
+        </button>
+        <a mat-button routerLink="/clientes">Cancelar</a>
+      </div>
+    </form>
+  </mat-card>
+</div>

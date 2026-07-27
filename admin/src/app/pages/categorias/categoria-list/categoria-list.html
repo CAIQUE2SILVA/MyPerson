@@ -1,0 +1,45 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Categorias</h1>
+    <a mat-flat-button color="primary" routerLink="/categorias/nova">
+      <mat-icon>add</mat-icon>
+      Nova categoria
+    </a>
+  </div>
+
+  @if (carregando()) {
+  <div class="loading-wrapper">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Carregando categorias...</span>
+  </div>
+  }
+
+  <mat-card>
+    <table mat-table [dataSource]="categorias()" class="data-table">
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>NOME</th>
+        <td mat-cell *matCellDef="let categoria">{{ categoria.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="slug">
+        <th mat-header-cell *matHeaderCellDef>SLUG</th>
+        <td mat-cell *matCellDef="let categoria">{{ categoria.slug }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>AÇÕES</th>
+        <td mat-cell *matCellDef="let categoria">
+          <a mat-icon-button [routerLink]="['/categorias', categoria.id, 'editar']" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button (click)="excluir(categoria)" aria-label="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+      <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+    </table>
+  </mat-card>
+</div>

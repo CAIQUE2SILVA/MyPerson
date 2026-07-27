@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
+
 import { Toolbar } from '../toolbar/toolbar';
 
 @Component({
@@ -14,34 +15,27 @@ import { Toolbar } from '../toolbar/toolbar';
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
     MatSidenavModule,
     MatToolbarModule,
-    MatButtonModule,
     MatIconModule,
-    MatListModule,
-    Toolbar
+    MenuModule,
+    Toolbar,
   ],
   templateUrl: './main-layout.html',
-  styleUrl: './main-layout.scss'
+  styleUrl: './main-layout.scss',
 })
 export class LayoutComponent {
   opened = signal(true);
   mode = signal<'side' | 'over' | 'push'>('side');
 
-  toggleSidenav() {
-    this.opened.update(value => !value);
-  }
-
-  menuItems = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/' },
-    { label: 'Produtos', icon: 'inventory', route: '/produtos' },
-    { label: 'Pedidos', icon: 'shopping_cart', route: '/pedidos' },
-    { label: 'Clientes', icon: 'people', route: '/clientes' },
-    { label: 'Relatórios', icon: 'bar_chart', route: '/relatorios' },
-    { label: 'Configurações', icon: 'settings', route: '/configuracoes' }
+  menuItems: MenuItem[] = [
+    { label: 'Dashboard', icon: 'pi pi-chart-line', routerLink: '/' },
+    { label: 'Produtos', icon: 'pi pi-box', routerLink: '/produtos' },
+    { label: 'Categorias', icon: 'pi pi-tags', routerLink: '/categorias' },
+    { label: 'Clientes', icon: 'pi pi-users', routerLink: '/clientes' },
   ];
 
-
+  toggleSidenav() {
+    this.opened.update((value) => !value);
+  }
 }

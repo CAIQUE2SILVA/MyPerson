@@ -19,10 +19,9 @@ html {
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
+  // O color-scheme é controlado por ThemeService via JS (light/dark/prefers).
+  // Material 3 gera --mat-sys-* para ambos os esquemas quando color-scheme alterna.
+  color-scheme: inherit;
 
   // Set a default background, font and text colors for the application using
   // Angular Material's system-level CSS variables. Learn more about these
