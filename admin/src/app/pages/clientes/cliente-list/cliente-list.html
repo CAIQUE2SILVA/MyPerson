@@ -1,0 +1,55 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Clientes</h1>
+    <a mat-flat-button color="primary" routerLink="/clientes/novo">
+      <mat-icon>add</mat-icon>
+      Novo cliente
+    </a>
+  </div>
+
+  @if (carregando()) {
+  <div class="loading-wrapper">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Carregando clientes...</span>
+  </div>
+  }
+
+  <mat-card>
+    <table mat-table [dataSource]="clientes()" class="data-table">
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>NOME</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>E-MAIL</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="telefone">
+        <th mat-header-cell *matHeaderCellDef>TELEFONE</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.telefone || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ativo">
+        <th mat-header-cell *matHeaderCellDef>ATIVO</th>
+        <td mat-cell *matCellDef="let cliente">{{ cliente.ativo ? 'Sim' : 'Não' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>AÇÕES</th>
+        <td mat-cell *matCellDef="let cliente">
+          <a mat-icon-button [routerLink]="['/clientes', cliente.id, 'editar']" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button (click)="excluir(cliente)" aria-label="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+      <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+    </table>
+  </mat-card>
+</div>

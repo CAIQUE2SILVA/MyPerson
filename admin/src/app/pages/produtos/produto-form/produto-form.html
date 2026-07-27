@@ -1,0 +1,71 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ titulo }}</h1>
+    <a mat-button routerLink="/produtos">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </a>
+  </div>
+
+  <mat-card>
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome" maxlength="200" />
+        @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+        <mat-error>Nome é obrigatório.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Descrição</mat-label>
+        <textarea matInput formControlName="descricao" rows="3" maxlength="1000"></textarea>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Preço</mat-label>
+          <input matInput type="number" formControlName="preco" min="0.01" step="0.01" />
+          @if (form.get('preco')?.invalid && form.get('preco')?.touched) {
+          <mat-error>Preço deve ser maior que zero.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estoque</mat-label>
+          <input matInput type="number" formControlName="estoque" min="0" />
+          @if (form.get('estoque')?.invalid && form.get('estoque')?.touched) {
+          <mat-error>Estoque não pode ser negativo.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categoria</mat-label>
+        <mat-select formControlName="categoriaId">
+          <mat-option [value]="null">Nenhuma</mat-option>
+          @for (categoria of categorias(); track categoria.id) {
+          <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>URL da imagem</mat-label>
+        <input matInput formControlName="imagemUrl" maxlength="500" />
+      </mat-form-field>
+
+      <mat-checkbox formControlName="ativo">Ativo</mat-checkbox>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="carregando()">
+          @if (carregando()) {
+          <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+          }
+          Salvar
+        </button>
+        <a mat-button routerLink="/produtos">Cancelar</a>
+      </div>
+    </form>
+  </mat-card>
+</div>

@@ -1,6 +1,6 @@
 # Admin MyPerson
 
-Painel administrativo em **Angular 21** com componentes standalone, Angular Material, Tailwind 4 e SSR via Express.
+Painel administrativo em **Angular 21** com componentes standalone, Angular Material, PrimeNG e SSR via Express.
 
 ## Acesso
 
@@ -15,8 +15,12 @@ A API é chamada em `http://localhost/api` (proxy Nginx em produção).
 
 - Login com JWT (`POST /api/auth/login`)
 - Proteção de rotas com guards de autenticação
-- Dashboard com layout, toolbar e cards de resumo
-- Serviços centralizados em `core/` (HTTP, auth, loading, notificações)
+- Dashboard com cards de resumo consumindo dados reais da API
+- CRUDs de produtos, categorias e clientes
+- Menu lateral com PrimeNG (`p-menu`)
+- Toggle de tema claro/escuro com persistência em `localStorage`
+- Tema SCSS global em `src/styles/_theme.scss`
+- Serviços centralizados em `core/` (HTTP, auth, loading, notificações, tema)
 
 ## Estrutura
 
@@ -24,15 +28,24 @@ A API é chamada em `http://localhost/api` (proxy Nginx em produção).
 admin/src/app/
 ├── app.ts / app.routes.ts     # Raiz e rotas principais
 ├── core/
-│   ├── api/auth/              # AuthService (login, token, logout)
-│   ├── guards/                # authGuard, guestGuard
-│   ├── interceptors/          # JWT no header Authorization
-│   └── services/              # RestService, Loading, Notification
-├── ui/layout/                 # Shell autenticado (toolbar + outlet)
+│   ├── api/
+│   │   ├── auth/               # AuthService (login, token, logout)
+│   │   ├── produtos/           # ProdutoService
+│   │   ├── categorias/         # CategoriaService
+│   │   ├── clientes/           # ClienteService
+│   │   └── dashboard/          # DashboardService (resumo)
+│   ├── guards/                 # authGuard, guestGuard
+│   ├── interceptors/           # JWT no header Authorization
+│   └── services/               # RestService, Loading, Notification, Theme
+├── ui/layout/                  # Shell autenticado (toolbar + outlet + menu PrimeNG)
 ├── pages/
-│   ├── auth/login/            # Tela de login (rota pública)
-│   └── dashboard/dashboard/   # Dashboard (rota protegida)
-└── shared/models/             # DTOs compartilhados (login, etc.)
+│   ├── auth/login/             # Tela de login (rota pública)
+│   ├── dashboard/dashboard/    # Dashboard (rota protegida)
+│   ├── produtos/               # Listagem e formulário de produtos
+│   ├── categorias/             # Listagem e formulário de categorias
+│   └── clientes/               # Listagem e formulário de clientes
+├── shared/models/              # DTOs compartilhados
+└── shared/constants/           # Constantes de endpoint da API
 ```
 
 ## Rotas
@@ -40,7 +53,16 @@ admin/src/app/
 | Rota (relativa a `/admin/`) | Guard      | Descrição |
 |-----------------------------|------------|-----------|
 | `login`                     | guestGuard | Formulário de login |
-| `` (vazio)                  | authGuard  | Layout + dashboard |
+| `` (vazio)                  | authGuard  | Dashboard |
+| `produtos`                  | authGuard  | Listagem de produtos |
+| `produtos/novo`             | authGuard  | Novo produto |
+| `produtos/:id/editar`       | authGuard  | Editar produto |
+| `categorias`                | authGuard  | Listagem de categorias |
+| `categorias/nova`           | authGuard  | Nova categoria |
+| `categorias/:id/editar`     | authGuard  | Editar categoria |
+| `clientes`                  | authGuard  | Listagem de clientes |
+| `clientes/novo`             | authGuard  | Novo cliente |
+| `clientes/:id/editar`       | authGuard  | Editar cliente |
 | `**`                        | —          | Redireciona para dashboard |
 
 ## Comandos
@@ -57,8 +79,9 @@ npm run serve:ssr:admin  # SSR após build
 
 - Componentes **standalone** (`standalone: true`) — sem NgModules
 - Lazy loading de páginas com `loadComponent` / `loadChildren`
-- Angular Material para UI (formulários, cards, toolbar)
-- Estilos globais em `src/styles.css`, reset em `src/app/app.css`
+- Angular Material para UI (formulários, cards, toolbar, tabelas)
+- PrimeNG para menu lateral e notificações (toast)
+- Estilos globais em `src/styles.scss` e tokens em `src/styles/_theme.scss`
 - Prettier configurado para templates Angular (`.html`)
 
 ## Documentação do projeto

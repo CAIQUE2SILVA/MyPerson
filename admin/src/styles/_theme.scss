@@ -1,0 +1,46 @@
+// Tema global MyPerson Admin
+// Tokens próprios que reagem ao modo claro/escuro. O Material 3 já gera
+// --mat-sys-* via mat.theme(); aqui adicionamos tokens de raio, sombra e
+// transição que não são expostos pelas variáveis do Material.
+
+:root {
+  --app-radius-sm: 4px;
+  --app-radius-md: 8px;
+  --app-radius-lg: 12px;
+  --app-radius-xl: 16px;
+  --app-transition-fast: 150ms ease;
+  --app-transition-base: 200ms ease;
+  --app-page-max-width: 1200px;
+  --app-form-max-width: 800px;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.p-dark {
+  color-scheme: dark;
+}
+
+body {
+  transition: background-color var(--app-transition-base), color var(--app-transition-base);
+}
+
+.app-card {
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  border-radius: var(--app-radius-md);
+  box-shadow: var(--mat-sys-level1);
+}
+
+.app-page-container {
+  padding: 1.5rem;
+  max-width: var(--app-page-max-width);
+  margin: 0 auto;
+}
+
+.app-form-container {
+  padding: 1.5rem;
+  max-width: var(--app-form-max-width);
+  margin: 0 auto;
+}

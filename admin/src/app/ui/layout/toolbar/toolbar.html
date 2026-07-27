@@ -1,19 +1,19 @@
 <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button (click)="onMenuClick()" class="menu-button">
-        <mat-icon>{{ opened() ? 'menu_open' : 'menu' }}</mat-icon>
+  <button mat-icon-button (click)="onMenuClick()" class="menu-button">
+    <mat-icon>{{ opened() ? 'menu_open' : 'menu' }}</mat-icon>
+  </button>
+  <span class="toolbar-title">Admin Panel</span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="toggleTheme()" [matTooltip]="themeService.isDark() ? 'Modo claro' : 'Modo escuro'" aria-label="Alternar tema">
+    <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+  <button mat-icon-button [matMenuTriggerFor]="accountMenu" aria-label="Conta">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #accountMenu="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
     </button>
-    <span class="toolbar-title">Admin Panel</span>
-    <span class="spacer"></span>
-    <button mat-icon-button>
-        <mat-icon>notifications</mat-icon>
-    </button>
-    <button mat-icon-button [matMenuTriggerFor]="accountMenu" aria-label="Conta">
-        <mat-icon>account_circle</mat-icon>
-    </button>
-    <mat-menu #accountMenu="matMenu">
-        <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            <span>Sair</span>
-        </button>
-    </mat-menu>
+  </mat-menu>
 </mat-toolbar>
