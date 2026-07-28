@@ -30,7 +30,14 @@ export class LayoutComponent {
 
   menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-chart-line', routerLink: '/' },
-    { label: 'Produtos', icon: 'pi pi-box', routerLink: '/produtos' },
+    {
+      label: 'Produtos',
+      icon: 'pi pi-box',
+      items: [
+        { label: 'Lista', icon: 'pi pi-list', routerLink: '/produtos' },
+        { label: 'Catálogo', icon: 'pi pi-th-large', routerLink: '/produtos/catalogo' },
+      ],
+    },
     { label: 'Categorias', icon: 'pi pi-tags', routerLink: '/categorias' },
     { label: 'Clientes', icon: 'pi pi-users', routerLink: '/clientes' },
   ];
