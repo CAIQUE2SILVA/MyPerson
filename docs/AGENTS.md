@@ -20,6 +20,7 @@ Monorepo full-stack com 3 serviços principais:
 - **Padrões arquitetônicos**: `docs/ARCHITECTURE.md`
 - **Convenções**: `docs/CONVENTIONS.md`
 - **Skill revisão de testes:** `.cursor/skills/revisao-testes-unitarios/`
+- **Skill auditoria de governança:** `.cursor/skills/repo-governance-audit/` (Agentic Repository Governance Kit)
 
 ## Convenções por Serviço
 
