@@ -21,6 +21,8 @@ Monorepo full-stack com 3 serviços principais:
 - **Convenções**: `docs/CONVENTIONS.md`
 - **Skill revisão de testes:** `.cursor/skills/revisao-testes-unitarios/`
 - **Skill auditoria de governança:** `.cursor/skills/repo-governance-audit/` (Agentic Repository Governance Kit)
+- **Skill de commit canônica:** `.cursor/skills/git-commit/` (revisão técnica/arquitetônica/testes + mensagem em Conventional Commits)
+- **Skill de commit (stub):** `.cursor/skills/smart-commit/` (redireciona para `git-commit`)
 
 ## Convenções por Serviço
 
