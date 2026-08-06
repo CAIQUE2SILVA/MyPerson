@@ -152,14 +152,17 @@ dev → revisao-tecnica → revisao-arquitetonica (se estrutura)
 
 ## Fase B — Skills (automação local do agente)
 
-### 10. Unificar skills de commit
+### 10. Unificar skills de commit ✅
 
 **Por quê:** `git-commit` e `smart-commit` fazem quase a mesma coisa.
 
+**Status:** unificação concluída. `git-commit` é a skill canônica; `smart-commit` virou stub que redireciona para `git-commit`.
+
 **Fazer:**
-- Manter uma skill canônica (`smart-commit` ou `git-commit`)
-- A outra vira stub que redireciona, ou é removida
+- Manter `git-commit` como canônica em `.cursor/skills/git-commit/`
+- `smart-commit` vira stub que redireciona para `git-commit`
 - Alinhar com `docs/CONVENTIONS.md` (idioma PT, escopos do monorepo)
+- Integrar revisão técnica/arquitetônica/testes no fluxo de commit quando o diff tocar lógica
 
 **Critério de pronto:** um único fluxo de commit documentado em `AGENTS.md`.
 
@@ -262,13 +265,16 @@ Não misturar e2e neste item.
 
 ---
 
-### 16. Skills opcionais de alto ROI (depois do núcleo)
+### 16. Skills opcionais de alto ROI (depois do núcleo) ✅
+
+**Status:** skills criadas e ajustadas.
 
 Ordem sugerida:
 
 1. **`debug-servicos`** — subir postgres/nginx + API/frontend/admin no Cloud Agent
 2. **`novo-endpoint-api`** — scaffold controller + DTO + teste âncora + nota em `API.md`
 3. **`novo-page-admin`** — scaffold em `pages/<domínio>/` + `*.spec.ts` mínimo
+4. **`repo-governance-audit`** — auditoria de governança e documentação (instalada em `.cursor/skills/repo-governance-audit/`)
 
 **Critério de pronto:** cada skill tem `description` com triggers claros e checklist curto.
 
