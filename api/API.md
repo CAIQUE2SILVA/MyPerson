@@ -55,6 +55,8 @@ Authorization: Bearer {token}
 
 ## Endpoints
 
+> **Aviso de segurança pendente:** os endpoints `GET /api/produtos` e `GET /api/categorias` estão atualmente públicos (sem autenticação). Isso expõe campos como `Estoque` e `Ativo` de produtos. A proteção desses endpoints é uma pendência reconhecida; a alteração do código (adição de `[Authorize]` ou filtro de campos) deve ser feita em um PR separado. Veja [docs/PRIVACIDADE.md](../docs/PRIVACIDADE.md) para o tratamento de dados sensíveis.
+
 ### Health Check
 
 **Endpoint**: `GET /api/health`
