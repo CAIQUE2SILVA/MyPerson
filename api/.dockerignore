@@ -13,6 +13,8 @@
 **/node_modules
 **/npm-debug.log
 **/obj
+MyPerson.Api.Tests/
+MyPerson.sln
 **/secrets.dev.yaml
 **/values.dev.yaml
 README.md
