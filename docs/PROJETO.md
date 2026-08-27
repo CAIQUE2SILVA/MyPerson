@@ -141,6 +141,14 @@ Considerações:
 
 O workflow `.github/workflows/deploy.yml` builda as imagens de produção. Para push/deploy automático, configure os secrets no GitHub e descomente os passos no workflow. Veja mais em [docs/CI.md](./CI.md).
 
+## Pendências Conhecidas
+
+| # | Pendência | Onde impacta | Status |
+|---|-----------|--------------|--------|
+| 1 | Integração do frontend com a API — o frontend ainda exibe dados mockados em algumas seções | `frontend/src/app/components/sections/FeaturedProducts.tsx` | Pendente de implementação |
+| 2 | Proteção dos endpoints `GET /api/produtos` e `GET /api/categorias` — atualmente públicos e podem expor campos sensíveis | `api/Controllers/ProdutosController.cs`, `api/Controllers/CategoriasController.cs` | Pendente de decisão/correção |
+| 3 | Mecanismos de autoatendimento LGPD para clientes (acesso, correção, exclusão) | `api/Controllers/ClientesController.cs` | Pendente de definição |
+
 ## Documentação Relacionada
 
 - [api/API.md](../api/API.md) — endpoints da API
