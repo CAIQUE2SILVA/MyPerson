@@ -17,6 +17,7 @@ A API é chamada em `http://localhost/api` (proxy Nginx em produção).
 - Proteção de rotas com guards de autenticação
 - Dashboard com cards de resumo consumindo dados reais da API
 - CRUDs de produtos, categorias e clientes
+- Catálogo visual de produtos com filtros de busca e categoria
 - Menu lateral com PrimeNG (`p-menu`)
 - Toggle de tema claro/escuro com persistência em `localStorage`
 - Tema SCSS global em `src/styles/_theme.scss`
@@ -41,7 +42,7 @@ admin/src/app/
 ├── pages/
 │   ├── auth/login/             # Tela de login (rota pública)
 │   ├── dashboard/dashboard/    # Dashboard (rota protegida)
-│   ├── produtos/               # Listagem e formulário de produtos
+│   ├── produtos/               # Listagem, catálogo e formulário de produtos
 │   ├── categorias/             # Listagem e formulário de categorias
 │   └── clientes/               # Listagem e formulário de clientes
 ├── shared/models/              # DTOs compartilhados
@@ -55,6 +56,7 @@ admin/src/app/
 | `login`                     | guestGuard | Formulário de login |
 | `` (vazio)                  | authGuard  | Dashboard |
 | `produtos`                  | authGuard  | Listagem de produtos |
+| `produtos/catalogo`         | authGuard  | Catálogo visual de produtos |
 | `produtos/novo`             | authGuard  | Novo produto |
 | `produtos/:id/editar`       | authGuard  | Editar produto |
 | `categorias`                | authGuard  | Listagem de categorias |

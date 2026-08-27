@@ -1,0 +1,86 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Catálogo de produtos</h1>
+    <a mat-button routerLink="/produtos">
+      <mat-icon>list</mat-icon>
+      Modo lista
+    </a>
+  </div>
+
+  <form [formGroup]="filtros" class="filters-row">
+    <mat-form-field appearance="outline" class="filter-busca">
+      <mat-label>Buscar produto</mat-label>
+      <input matInput formControlName="busca" placeholder="Nome ou descrição" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-categoria">
+      <mat-label>Categoria</mat-label>
+      <mat-select formControlName="categoriaId">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (categoria of categorias(); track categoria.id) {
+        <mat-option [value]="categoria.id">{{ categoria.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-icon-button type="button" (click)="limparFiltros()" matTooltip="Limpar filtros" aria-label="Limpar filtros">
+      <mat-icon>clear_all</mat-icon>
+    </button>
+  </form>
+
+  <p class="results-info">
+    Exibindo {{ totalFiltrados() }} de {{ totalProdutos() }} produto(s)
+  </p>
+
+  @if (carregando()) {
+  <div class="loading-wrapper">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Carregando catálogo...</span>
+  </div>
+  }
+
+  @if (!carregando() && produtosFiltrados().length === 0) {
+  <mat-card class="empty-state">
+    <mat-icon>inventory_2</mat-icon>
+    <p>Nenhum produto encontrado.</p>
+    <a mat-button routerLink="/produtos/novo">Criar produto</a>
+  </mat-card>
+  }
+
+  <div class="catalog-grid">
+    @for (produto of produtosFiltrados(); track produto.id) {
+    <mat-card class="product-card">
+      <div class="product-image">
+        <img [src]="produto.imagemUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%239ca3af%22%3E%3Cpath d=%22M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z%22/%3E%3C/svg%3E'" [alt]="produto.nome" (error)="imagemFallback($event)" />
+        <mat-chip-set class="product-status">
+          <mat-chip [highlighted]="produto.ativo" [color]="produto.ativo ? 'primary' : 'warn'">
+            {{ produto.ativo ? 'Ativo' : 'Inativo' }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+
+      <mat-card-content class="product-content">
+        <h2 class="product-name">{{ produto.nome }}</h2>
+        <p class="product-category">{{ produto.categoriaNome || 'Sem categoria' }}</p>
+        <p class="product-description" [title]="produto.descricao ?? ''">
+          {{ produto.descricao || 'Sem descrição' }}
+        </p>
+        <div class="product-meta">
+          <span class="product-price">{{ formatarMoeda(produto.preco) }}</span>
+          <span class="product-stock">Estoque: {{ produto.estoque }}</span>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="product-actions">
+        <a mat-icon-button [routerLink]="['/produtos', produto.id, 'editar']" aria-label="Editar">
+          <mat-icon>edit</mat-icon>
+        </a>
+        <button mat-icon-button (click)="excluir(produto)" aria-label="Excluir">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+    }
+  </div>
+</div>
