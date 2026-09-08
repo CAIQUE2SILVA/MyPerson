@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs/operators';
 
 import { ProdutoService } from '../../../core/api/produtos/produto.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification/notification.service';
 import { Produto } from '../../../shared/models/produto/produto.model';
 
@@ -29,6 +30,7 @@ import { Produto } from '../../../shared/models/produto/produto.model';
 })
 export class ProdutoList {
   private readonly produtoService = inject(ProdutoService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly notification = inject(NotificationService);
 
   readonly produtos = signal<Produto[]>([]);
@@ -50,8 +52,16 @@ export class ProdutoList {
       });
   }
 
-  excluir(produto: Produto): void {
-    if (!confirm(`Deseja excluir o produto "${produto.nome}"?`)) {
+  async excluir(produto: Produto): Promise<void> {
+    const confirmado = await this.confirmDialog.open({
+      eyebrow: 'Confirmação',
+      section: 'Catálogo · Produtos',
+      title: 'Excluir produto',
+      message: `Deseja excluir o produto "${produto.nome}"? Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    });
+    if (!confirmado) {
       return;
     }
     this.produtoService.excluir(produto.id).subscribe({

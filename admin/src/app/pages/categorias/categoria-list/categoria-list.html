@@ -1,6 +1,9 @@
 <div class="page-container">
   <div class="page-header">
-    <h1 class="page-title">Categorias</h1>
+    <div class="page-heading">
+      <span class="app-eyebrow">Organização</span>
+      <h1 class="page-title">Categorias</h1>
+    </div>
     <a mat-flat-button color="primary" routerLink="/categorias/nova">
       <mat-icon>add</mat-icon>
       Nova categoria
@@ -14,7 +17,7 @@
   </div>
   }
 
-  <mat-card>
+  <mat-card class="table-card">
     <table mat-table [dataSource]="categorias()" class="data-table">
       <ng-container matColumnDef="nome">
         <th mat-header-cell *matHeaderCellDef>NOME</th>

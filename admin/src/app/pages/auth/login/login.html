@@ -1,46 +1,56 @@
 <main class="login-main">
   <div class="login-page">
-    <mat-card class="login-card">
-      <mat-card-header>
-        <mat-card-title>Admin</mat-card-title>
-        <mat-card-subtitle>Entre com suas credenciais</mat-card-subtitle>
+    <mat-card class="login-card app-section-card">
+      <mat-card-header class="login-card-header">
+        <div class="login-card-heading">
+          <span class="app-eyebrow">Acesso administrativo</span>
+          <mat-card-title class="login-title">Admin</mat-card-title>
+          <mat-card-subtitle>Entre com suas credenciais</mat-card-subtitle>
+        </div>
       </mat-card-header>
 
       <mat-card-content>
-        <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Usuário</mat-label>
-            <input matInput formControlName="username" autocomplete="username" />
-            @if (form.controls.username.touched && form.controls.username.hasError('required')) {
-            <mat-error>Usuário é obrigatório</mat-error>
-            }
-          </mat-form-field>
+        <div class="app-form-section login-form-section">
+          <div class="app-form-section__header">
+            <h2 class="app-form-section__title">Credenciais</h2>
+          </div>
+          <div class="app-form-section__body">
+            <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Usuário</mat-label>
+                <input matInput formControlName="username" autocomplete="username" />
+                @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+                <mat-error>Usuário é obrigatório</mat-error>
+                }
+              </mat-form-field>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Senha</mat-label>
-            <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password"
-              autocomplete="current-password" />
-            <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()"
-              [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'">
-              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            @if (form.controls.password.touched && form.controls.password.hasError('required')) {
-            <mat-error>Senha é obrigatória</mat-error>
-            }
-          </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Senha</mat-label>
+                <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password"
+                  autocomplete="current-password" />
+                <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()"
+                  [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'">
+                  <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+                <mat-error>Senha é obrigatória</mat-error>
+                }
+              </mat-form-field>
 
-          @if (errorMessage()) {
-          <p class="error-message" role="alert">{{ errorMessage() }}</p>
-          }
+              @if (errorMessage()) {
+              <p class="error-message" role="alert">{{ errorMessage() }}</p>
+              }
 
-          <button mat-flat-button color="primary" type="submit" class="full-width submit-button" [disabled]="loading()">
-            @if (loading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-            } @else {
-            Entrar
-            }
-          </button>
-        </form>
+              <button mat-flat-button color="primary" type="submit" class="full-width submit-button" [disabled]="loading()">
+                @if (loading()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                } @else {
+                Entrar
+                }
+              </button>
+            </form>
+          </div>
+        </div>
       </mat-card-content>
 
       <mat-card-actions class="login-actions">

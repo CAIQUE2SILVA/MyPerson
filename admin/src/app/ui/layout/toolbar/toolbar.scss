@@ -1,21 +1,41 @@
 .toolbar {
-  position: fixed; /* ✅ Fixar no topo */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: var(--app-surface-header) !important;
+  color: #faf8f4 !important;
+  border-bottom: 1px solid rgba(192, 149, 55, 0.15);
+  box-shadow: 0 2px 8px rgba(51, 49, 43, 0.18);
 }
 
 .menu-button {
   margin-right: 16px;
+  color: var(--brand-gold) !important;
 }
 
 .toolbar-title {
-  font-size: 18px;
-  font-weight: 500;
+  font-family: var(--app-font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #faf8f4;
 }
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.toolbar mat-icon {
+  color: rgba(250, 248, 244, 0.88);
+  transition: color var(--app-transition-fast);
+}
+
+.toolbar button:hover mat-icon {
+  color: var(--brand-amber);
+}
+
+html.p-dark .toolbar {
+  background-color: var(--app-surface-header) !important;
 }

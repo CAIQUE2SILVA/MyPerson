@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs/operators';
 
 import { CategoriaService } from '../../../core/api/categorias/categoria.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification/notification.service';
 import { Categoria } from '../../../shared/models/categoria/categoria.model';
 
@@ -29,6 +30,7 @@ import { Categoria } from '../../../shared/models/categoria/categoria.model';
 })
 export class CategoriaList {
   private readonly categoriaService = inject(CategoriaService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly notification = inject(NotificationService);
 
   readonly categorias = signal<Categoria[]>([]);
@@ -50,8 +52,16 @@ export class CategoriaList {
       });
   }
 
-  excluir(categoria: Categoria): void {
-    if (!confirm(`Deseja excluir a categoria "${categoria.nome}"?`)) {
+  async excluir(categoria: Categoria): Promise<void> {
+    const confirmado = await this.confirmDialog.open({
+      eyebrow: 'Confirmação',
+      section: 'Organização · Categorias',
+      title: 'Excluir categoria',
+      message: `Deseja excluir a categoria "${categoria.nome}"? Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    });
+    if (!confirmado) {
       return;
     }
     this.categoriaService.excluir(categoria.id).subscribe({

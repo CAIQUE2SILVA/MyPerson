@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { MessageService } from 'primeng/api';
-import Lara from '@primeuix/themes/lara';
+import { MyPersonPreset } from './theme/prime-preset';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     providePrimeNG({
       theme: {
-        preset: Lara,
+        preset: MyPersonPreset,
         options: {
           darkModeSelector: '.p-dark'
         }

@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs/operators';
 
 import { ClienteService } from '../../../core/api/clientes/cliente.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification/notification.service';
 import { Cliente } from '../../../shared/models/cliente/cliente.model';
 
@@ -29,6 +30,7 @@ import { Cliente } from '../../../shared/models/cliente/cliente.model';
 })
 export class ClienteList {
   private readonly clienteService = inject(ClienteService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly notification = inject(NotificationService);
 
   readonly clientes = signal<Cliente[]>([]);
@@ -50,8 +52,16 @@ export class ClienteList {
       });
   }
 
-  excluir(cliente: Cliente): void {
-    if (!confirm(`Deseja excluir o cliente "${cliente.nome}"?`)) {
+  async excluir(cliente: Cliente): Promise<void> {
+    const confirmado = await this.confirmDialog.open({
+      eyebrow: 'Confirmação',
+      section: 'Cadastro · Clientes',
+      title: 'Excluir cliente',
+      message: `Deseja excluir o cliente "${cliente.nome}"? Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    });
+    if (!confirmado) {
       return;
     }
     this.clienteService.excluir(cliente.id).subscribe({

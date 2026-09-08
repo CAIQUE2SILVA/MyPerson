@@ -16,6 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { ProdutoService } from '../../../core/api/produtos/produto.service';
 import { CategoriaService } from '../../../core/api/categorias/categoria.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification/notification.service';
 import { Produto } from '../../../shared/models/produto/produto.model';
 import { Categoria } from '../../../shared/models/categoria/categoria.model';
@@ -44,6 +45,7 @@ export class ProdutoCatalogo {
   private readonly fb = inject(FormBuilder);
   private readonly produtoService = inject(ProdutoService);
   private readonly categoriaService = inject(CategoriaService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly notification = inject(NotificationService);
 
   readonly produtos = signal<Produto[]>([]);
@@ -94,8 +96,16 @@ export class ProdutoCatalogo {
     });
   }
 
-  excluir(produto: Produto): void {
-    if (!confirm(`Deseja excluir o produto "${produto.nome}"?`)) {
+  async excluir(produto: Produto): Promise<void> {
+    const confirmado = await this.confirmDialog.open({
+      eyebrow: 'Confirmação',
+      section: 'Catálogo · Produtos',
+      title: 'Excluir produto',
+      message: `Deseja excluir o produto "${produto.nome}"? Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    });
+    if (!confirmado) {
       return;
     }
     this.produtoService.excluir(produto.id).subscribe({

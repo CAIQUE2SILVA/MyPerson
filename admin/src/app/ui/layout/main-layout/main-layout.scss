@@ -1,11 +1,12 @@
 .sidenav-container {
   height: calc(100vh - 64px);
+  background-color: var(--app-surface-page);
 }
 
 mat-sidenav {
   width: 260px;
-  background-color: var(--mat-sys-surface-container);
-  border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--app-surface-sidebar);
+  border-right: 1px solid var(--app-border-subtle);
 }
 
 .sidenav-header {
@@ -14,41 +15,70 @@ mat-sidenav {
   justify-content: center;
   height: 64px;
   padding: 0 1rem;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  border-bottom: 1px solid rgba(192, 149, 55, 0.15);
 
   h2 {
     margin: 0;
-    font: var(--mat-sys-title-large);
-    color: var(--mat-sys-on-surface);
+    font-family: var(--app-font-display);
+    font-size: 1.375rem;
+    font-weight: 400;
+    color: var(--brand-gold);
+    letter-spacing: 0.02em;
   }
 }
 
 .content-wrapper {
   padding: 0;
   min-height: 100%;
-  background-color: var(--mat-sys-surface-dim);
+  background-color: var(--app-surface-page);
 }
 
 ::ng-deep .app-sidebar-menu {
   width: 100%;
   border: none;
   background: transparent;
+  padding: 0.5rem 0;
+
+  .p-menu-list {
+    padding: 0 0.5rem;
+  }
 
   .p-menuitem-link {
-    color: var(--mat-sys-on-surface);
-    border-radius: 0;
+    color: rgba(250, 248, 244, 0.82);
+    border-radius: var(--app-radius-md);
+    margin: 0.125rem 0;
+    padding: 0.625rem 0.875rem;
+    transition:
+      background-color var(--app-transition-fast),
+      color var(--app-transition-fast);
 
     &:hover {
-      background-color: var(--mat-sys-surface-variant);
+      background-color: rgba(192, 149, 55, 0.12);
+      color: var(--brand-amber);
     }
 
     &.p-menuitem-link-active {
-      background-color: var(--mat-sys-primary-container);
-      color: var(--mat-sys-on-primary-container);
+      background-color: rgba(192, 149, 55, 0.2);
+      color: var(--brand-amber);
+      border-left: 3px solid var(--brand-amber);
+      padding-left: calc(0.875rem - 3px);
     }
   }
 
   .p-menuitem-icon {
     color: inherit;
   }
+
+  .p-menuitem-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+html.p-dark mat-sidenav {
+  background-color: var(--app-surface-sidebar);
+}
+
+html.p-dark .sidenav-header h2 {
+  color: var(--brand-amber);
 }
