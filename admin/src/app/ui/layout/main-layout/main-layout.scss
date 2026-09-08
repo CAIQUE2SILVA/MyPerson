@@ -1,5 +1,6 @@
 .sidenav-container {
-  height: calc(100vh - 64px);
+  margin-top: var(--app-toolbar-height, 64px);
+  height: calc(100vh - var(--app-toolbar-height, 64px));
   background-color: var(--app-surface-page);
 }
 
