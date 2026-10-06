@@ -24,6 +24,8 @@ postgres_data/
 # .NET
 api/bin/
 api/obj/
+api/MyPerson.Api.Tests/bin/
+api/MyPerson.Api.Tests/obj/
 
 # Node
 node_modules/
