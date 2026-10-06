@@ -78,6 +78,7 @@ services:
     environment:
       - WATCHPACK_POLLING=true
       - API_INTERNAL_URL=http://api:5000/api
+      - WHATSAPP_NUMBER=${WHATSAPP_NUMBER:-}
 
   admin:
     build:

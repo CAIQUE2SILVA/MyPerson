@@ -72,6 +72,7 @@ Copie `env.example` para `.env` na raiz e ajuste conforme o ambiente:
 | `JWT_AUDIENCE` | Audiência do token | `MyPersonUsers` |
 | `AUTH_ADMIN_USER` | Usuário admin | `admin` |
 | `AUTH_ADMIN_PASSWORD` | Senha admin | — |
+| `WHATSAPP_NUMBER` | Número da loja (DDI + DDD + número) para o botão de compra | — |
 
 ## Como Executar
 
