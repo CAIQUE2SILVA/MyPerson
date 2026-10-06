@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <Compile Remove="MyPerson.Api.Tests\**\*.cs" />
+    <Content Remove="MyPerson.Api.Tests\**\*" />
+    <None Remove="MyPerson.Api.Tests\**\*" />
+    <EmbeddedResource Remove="MyPerson.Api.Tests\**\*" />
   </ItemGroup>
 
 </Project>

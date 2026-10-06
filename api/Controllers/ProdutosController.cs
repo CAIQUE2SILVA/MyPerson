@@ -21,8 +21,79 @@ public class ProdutosController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todos os produtos
+    /// Vitrine pública: só produtos ativos, sem estoque nem flag interno.
     /// </summary>
+    [HttpGet("vitrine")]
+    public async Task<ActionResult<IEnumerable<ProdutoVitrineDto>>> GetVitrine()
+    {
+        try
+        {
+            var produtos = await _context.Produtos
+                .Where(p => p.Ativo)
+                .OrderByDescending(p => p.DataCriacao)
+                .Select(p => new ProdutoVitrineDto
+                {
+                    Id = p.Id,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    Preco = p.Preco,
+                    CategoriaId = p.CategoriaId,
+                    CategoriaNome = p.Categoria != null ? p.Categoria.Nome : null,
+                    CategoriaSlug = p.Categoria != null ? p.Categoria.Slug : null,
+                    ImagemUrl = p.ImagemUrl
+                })
+                .ToListAsync();
+
+            return Ok(produtos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar vitrine de produtos");
+            return StatusCode(500, new { message = "Erro interno ao buscar produtos" });
+        }
+    }
+
+    /// <summary>
+    /// Detalhe público de um produto ativo.
+    /// </summary>
+    [HttpGet("vitrine/{id:int}")]
+    public async Task<ActionResult<ProdutoVitrineDto>> GetProdutoVitrine(int id)
+    {
+        try
+        {
+            var produto = await _context.Produtos
+                .Where(p => p.Id == id && p.Ativo)
+                .Select(p => new ProdutoVitrineDto
+                {
+                    Id = p.Id,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    Preco = p.Preco,
+                    CategoriaId = p.CategoriaId,
+                    CategoriaNome = p.Categoria != null ? p.Categoria.Nome : null,
+                    CategoriaSlug = p.Categoria != null ? p.Categoria.Slug : null,
+                    ImagemUrl = p.ImagemUrl
+                })
+                .FirstOrDefaultAsync();
+
+            if (produto == null)
+            {
+                return NotFound(new { message = $"Produto com ID {id} não encontrado" });
+            }
+
+            return Ok(produto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar produto da vitrine {Id}", id);
+            return StatusCode(500, new { message = "Erro interno ao buscar produto" });
+        }
+    }
+
+    /// <summary>
+    /// Lista todos os produtos (admin)
+    /// </summary>
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProdutoResponseDto>>> GetProdutos()
     {
@@ -56,9 +127,10 @@ public class ProdutosController : ControllerBase
     }
 
     /// <summary>
-    /// Busca um produto por ID
+    /// Busca um produto por ID (admin)
     /// </summary>
-    [HttpGet("{id}")]
+    [Authorize]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<ProdutoResponseDto>> GetProduto(int id)
     {
         try
