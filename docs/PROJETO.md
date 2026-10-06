@@ -145,7 +145,7 @@ O workflow `.github/workflows/deploy.yml` builda as imagens de produção. Para 
 
 | # | Pendência | Onde impacta | Status |
 |---|-----------|--------------|--------|
-| 1 | Integração do frontend com a API — o frontend ainda exibe dados mockados em algumas seções | `frontend/src/app/components/sections/FeaturedProducts.tsx` | Pendente de implementação |
+| 1 | Integração do frontend com a API — home, listagens e detalhe leem `/api/produtos/vitrine` | `frontend/src/lib/catalog.ts` | Feito |
 | 2 | Proteção de `GET /api/produtos` — estoque ficou só no admin; a loja usa `/api/produtos/vitrine` | `api/Controllers/ProdutosController.cs` | Feito. Categorias públicas só com nome e slug |
 | 3 | Mecanismos de autoatendimento LGPD para clientes (acesso, correção, exclusão) | `api/Controllers/ClientesController.cs` | Pendente de definição |
 
