@@ -55,7 +55,7 @@ Authorization: Bearer {token}
 
 ## Endpoints
 
-> **Aviso de segurança pendente:** os endpoints `GET /api/produtos` e `GET /api/categorias` estão atualmente públicos (sem autenticação). Isso expõe campos como `Estoque` e `Ativo` de produtos. A proteção desses endpoints é uma pendência reconhecida; a alteração do código (adição de `[Authorize]` ou filtro de campos) deve ser feita em um PR separado. Veja [docs/PRIVACIDADE.md](../docs/PRIVACIDADE.md) para o tratamento de dados sensíveis.
+> A vitrine pública (`GET /api/produtos/vitrine`) devolve só produtos ativos, sem estoque. `GET /api/produtos` e `GET /api/produtos/{id}` exigem JWT e são o contrato do admin. `GET /api/categorias` continua público: a resposta traz apenas nome e slug.
 
 ### Health Check
 
@@ -71,11 +71,32 @@ Verifica o status da API e conexão com o banco de dados.
 
 | Método | Endpoint | Auth | Descrição |
 |--------|----------|------|-----------|
-| GET | `/api/produtos` | Não | Lista todos os produtos |
-| GET | `/api/produtos/{id}` | Não | Busca produto por ID |
+| GET | `/api/produtos/vitrine` | Não | Lista produtos ativos para a loja |
+| GET | `/api/produtos/vitrine/{id}` | Não | Detalhe público de produto ativo |
+| GET | `/api/produtos` | Sim | Lista todos os produtos (admin) |
+| GET | `/api/produtos/{id}` | Sim | Busca produto por ID (admin) |
 | POST | `/api/produtos` | Sim | Cria novo produto |
 | PUT | `/api/produtos/{id}` | Sim | Atualiza produto |
 | DELETE | `/api/produtos/{id}` | Sim | Remove produto |
+
+**Vitrine** — `GET /api/produtos/vitrine`
+
+```json
+[
+  {
+    "id": 1,
+    "nome": "Camiseta Básica",
+    "descricao": "Camiseta 100% algodão",
+    "preco": 49.90,
+    "categoriaId": 1,
+    "categoriaNome": "Roupas",
+    "categoriaSlug": "roupas",
+    "imagemUrl": "https://exemplo.com/img.jpg"
+  }
+]
+```
+
+Produto inativo ou inexistente em `GET /api/produtos/vitrine/{id}` responde 404.
 
 **Criar Produto** — `POST /api/produtos`
 ```json
@@ -227,8 +248,12 @@ curl -X POST http://localhost/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"sua_senha"}'
 
-# Listar produtos
-curl http://localhost/api/produtos
+# Vitrine pública
+curl http://localhost/api/produtos/vitrine
+
+# Listar produtos (admin)
+curl http://localhost/api/produtos \
+  -H "Authorization: Bearer {token}"
 
 # Registrar cliente
 curl -X POST http://localhost/api/clientes/registro \
