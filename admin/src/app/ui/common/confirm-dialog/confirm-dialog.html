@@ -1,0 +1,42 @@
+<div class="app-dialog">
+  <button mat-icon-button type="button" class="app-dialog__close" (click)="fechar()" aria-label="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <header class="app-dialog__header">
+    @if (data.eyebrow) {
+    <span class="app-eyebrow">{{ data.eyebrow }}</span>
+    }
+    @if (data.section) {
+    <span class="app-dialog__section">{{ data.section }}</span>
+    }
+    <h2 class="app-dialog__title">{{ data.title }}</h2>
+  </header>
+
+  <mat-dialog-content class="app-dialog__content">
+    <div class="app-form-section app-dialog__section-card">
+      <div class="app-form-section__header">
+        <h3 class="app-form-section__title">Resumo</h3>
+      </div>
+      <div class="app-form-section__body">
+        <p class="app-dialog__message">{{ data.message }}</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="app-dialog__actions">
+    <button mat-stroked-button type="button" (click)="fechar()">
+      {{ data.cancelLabel ?? 'Cancelar' }}
+    </button>
+    <button
+      mat-flat-button
+      type="button"
+      color="primary"
+      class="app-dialog__confirm"
+      (click)="confirmar()"
+    >
+      <mat-icon>check</mat-icon>
+      {{ data.confirmLabel ?? 'Confirmar' }}
+    </button>
+  </mat-dialog-actions>
+</div>

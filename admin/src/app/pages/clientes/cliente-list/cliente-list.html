@@ -1,6 +1,9 @@
 <div class="page-container">
   <div class="page-header">
-    <h1 class="page-title">Clientes</h1>
+    <div class="page-heading">
+      <span class="app-eyebrow">Cadastro</span>
+      <h1 class="page-title">Clientes</h1>
+    </div>
     <a mat-flat-button color="primary" routerLink="/clientes/novo">
       <mat-icon>add</mat-icon>
       Novo cliente
@@ -14,7 +17,7 @@
   </div>
   }
 
-  <mat-card>
+  <mat-card class="table-card">
     <table mat-table [dataSource]="clientes()" class="data-table">
       <ng-container matColumnDef="nome">
         <th mat-header-cell *matHeaderCellDef>NOME</th>

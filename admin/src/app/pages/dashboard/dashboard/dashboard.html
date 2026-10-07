@@ -1,29 +1,32 @@
-<div class="dashboard-container">
+<div class="dashboard-container app-page-container">
   <div class="dashboard-header">
-    <h1 class="dashboard-title">Resumo da Gestão</h1>
-    <span class="last-update">Última atualização: Hoje, {{ ultimaAtualizacao | date:'HH:mm' }}</span>
+    <div class="dashboard-heading">
+      <span class="app-eyebrow">Visão geral</span>
+      <h1 class="app-page-title dashboard-title">Resumo da Gestão</h1>
+    </div>
+    <span class="last-update app-mono">Última atualização: Hoje, {{ ultimaAtualizacao | date:'HH:mm' }}</span>
   </div>
 
   @if (carregando()) {
-  <div class="loading-wrapper">
+  <div class="loading-wrapper app-section-card">
     <mat-spinner diameter="40"></mat-spinner>
     <span>Carregando resumo...</span>
   </div>
   }
 
   @if (erro(); as mensagem) {
-  <div class="error-message">{{ mensagem }}</div>
+  <div class="error-message app-section-card">{{ mensagem }}</div>
   }
 
   <div class="kpi-cards">
     @for (card of cards; track card.titulo) {
-    <mat-card class="kpi-card kpi-card-{{ card.cor }}" [routerLink]="card.rota">
+    <mat-card class="kpi-card app-section-card kpi-card-{{ card.cor }}" [routerLink]="card.rota">
       <div class="kpi-icon-wrapper">
         <mat-icon>{{ card.icone }}</mat-icon>
       </div>
       <div class="kpi-content">
         <span class="kpi-label">{{ card.titulo }}</span>
-        <span class="kpi-value">{{ card.valor() }}</span>
+        <span class="kpi-value app-mono">{{ card.valor() }}</span>
       </div>
     </mat-card>
     }
