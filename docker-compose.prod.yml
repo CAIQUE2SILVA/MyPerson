@@ -59,6 +59,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=/api
       - API_INTERNAL_URL=http://api:5000/api
+      - WHATSAPP_NUMBER=${WHATSAPP_NUMBER:-}
     depends_on:
       api:
         condition: service_healthy

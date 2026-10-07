@@ -2,6 +2,7 @@ import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import { loadProduto } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
+import { linkCompra } from "@/lib/whatsapp";
 import Link from "next/link";
 
 interface PageProps {
@@ -41,6 +42,8 @@ export default async function ProdutoPage({ params }: PageProps) {
     );
   }
 
+  const compra = linkCompra(produto.nome, formatPrice(produto.preco));
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -70,7 +73,17 @@ export default async function ProdutoPage({ params }: PageProps) {
             )}
             <h1 className="text-4xl font-bold text-gray-900 mb-4">{produto.nome}</h1>
             <p className="text-4xl font-bold text-gray-900 mb-6">{formatPrice(produto.preco)}</p>
-            {produto.descricao && <p className="text-lg text-gray-700">{produto.descricao}</p>}
+            {produto.descricao && <p className="text-lg text-gray-700 mb-6">{produto.descricao}</p>}
+            {compra && (
+              <a
+                href={compra}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-xl bg-green-600 px-6 py-4 text-lg font-semibold text-white hover:bg-green-700"
+              >
+                Comprar no WhatsApp
+              </a>
+            )}
           </div>
         </div>
       </main>
