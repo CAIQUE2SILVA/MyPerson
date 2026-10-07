@@ -1,42 +1,41 @@
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
+import ProductGrid, { CatalogoMensagem } from "../../components/product/ProductGrid";
+import { loadCategorias, loadVitrine } from "@/lib/catalog";
 
 interface PageProps {
-  params: Promise<{
-    slug: string;
-  }> | {
-    slug: string;
-  };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function CategoriaPage({ params }: PageProps) {
-  // Aguardar params se for Promise (Next.js 16+)
-  let resolvedParams;
-  if (params instanceof Promise) {
-    resolvedParams = await params;
-  } else {
-    resolvedParams = params;
-  }
-  
-  // Verificar se params existe e tem slug
-  const slug = resolvedParams?.slug || "";
-  
-  // Capitalizar primeira letra com verificação adicional
-  const categoriaNome = slug && slug.length > 0
-    ? slug.charAt(0).toUpperCase() + slug.slice(1)
-    : "Categoria";
-  
+  const { slug } = await params;
+  const [{ produtos, erro }, { categorias, erro: erroCategoria }] = await Promise.all([
+    loadVitrine(),
+    loadCategorias(),
+  ]);
+  const categoria = categorias.find((item) => item.slug === slug);
+  const daCategoria = produtos.filter((produto) => produto.categoriaSlug === slug);
+  const falha = erro || erroCategoria;
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          Categoria: {categoriaNome}
+          {categoria?.nome ?? "Categoria"}
         </h1>
-        <p className="text-lg text-gray-600">Produtos da categoria {categoriaNome}...</p>
+        {falha && <CatalogoMensagem erro vazio={false} />}
+        {!falha && !categoria && (
+          <p className="text-lg text-gray-600">Categoria não encontrada.</p>
+        )}
+        {!falha && categoria && (
+          <>
+            <CatalogoMensagem erro={false} vazio={daCategoria.length === 0} />
+            {daCategoria.length > 0 && <ProductGrid produtos={daCategoria} />}
+          </>
+        )}
       </main>
       <Footer />
     </div>
   );
 }
-
