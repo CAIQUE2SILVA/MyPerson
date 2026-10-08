@@ -41,7 +41,7 @@
               <p class="error-message" role="alert">{{ errorMessage() }}</p>
               }
 
-              <button mat-flat-button color="primary" type="submit" class="full-width submit-button" [disabled]="loading()">
+              <button mat-flat-button color="primary" type="submit" class="full-width submit-button" [disabled]="loading() || bloqueado()">
                 @if (loading()) {
                 <mat-spinner diameter="20"></mat-spinner>
                 } @else {
