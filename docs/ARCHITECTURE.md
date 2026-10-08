@@ -40,6 +40,7 @@ api/
 - Login: `POST /api/auth/login`
 - Token em `Authorization: Bearer {token}` nas requisições protegidas
 - Login e registro público: no máximo 5 requisições por minuto por IP (`AuthRateLimit`)
+- Cinco senhas erradas bloqueiam o admin ou o cliente por 15 minutos (`BloqueioTentativas`)
 
 ## Frontend (`frontend/`)
 

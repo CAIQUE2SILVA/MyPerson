@@ -16,12 +16,18 @@ public class ClientesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<ClientesController> _logger;
+    private readonly BloqueioTentativas _bloqueio;
     private readonly PasswordHasher<Cliente> _passwordHasher = new();
+    private static readonly string HashSenhaDummy = new PasswordHasher<Cliente>().HashPassword(null!, "senha-inexistente");
 
-    public ClientesController(ApplicationDbContext context, ILogger<ClientesController> logger)
+    public ClientesController(
+        ApplicationDbContext context,
+        ILogger<ClientesController> logger,
+        BloqueioTentativas bloqueio)
     {
         _context = context;
         _logger = logger;
+        _bloqueio = bloqueio;
     }
 
     /// <summary>
@@ -98,6 +104,63 @@ public class ClientesController : ControllerBase
             return StatusCode(500, new { message = "Erro interno ao buscar cliente" });
         }
     }
+
+    /// <summary>
+    /// Entra com e-mail e senha do cliente. Não emite token de admin.
+    /// </summary>
+    [EnableRateLimiting(AuthRateLimit.Policy)]
+    [HttpPost("entrar")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(429)]
+    public async Task<IActionResult> Entrar(EntrarClienteDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var chave = BloqueioTentativas.ChaveCliente(dto.Email);
+            if (_bloqueio.Bloqueado(chave, DateTime.UtcNow, out var retryAfterSeconds))
+                return Bloqueado(retryAfterSeconds);
+
+            var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Email == dto.Email);
+            var senhaConfere = SenhaConfere(cliente, dto.Senha);
+            if (cliente == null || !senhaConfere || !cliente.Ativo)
+            {
+                if (cliente != null && !senhaConfere)
+                {
+                    _bloqueio.RegistrarFalha(chave, DateTime.UtcNow);
+                    if (_bloqueio.Bloqueado(chave, DateTime.UtcNow, out retryAfterSeconds))
+                        return Bloqueado(retryAfterSeconds);
+                }
+
+                return Unauthorized(new { message = "E-mail ou senha inválidos" });
+            }
+
+            _bloqueio.RegistrarSucesso(chave);
+            return Ok(new { cliente.Id, cliente.Nome });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao autenticar cliente");
+            return StatusCode(500, new { message = "Erro interno ao autenticar cliente" });
+        }
+    }
+
+    private bool SenhaConfere(Cliente? cliente, string senha)
+    {
+        var hash = cliente?.SenhaHash ?? HashSenhaDummy;
+        var resultado = _passwordHasher.VerifyHashedPassword(null!, hash, senha);
+        return cliente != null && resultado == PasswordVerificationResult.Success;
+    }
+
+    private ObjectResult Bloqueado(int retryAfterSeconds) =>
+        StatusCode(StatusCodes.Status429TooManyRequests, new
+        {
+            message = BloqueioTentativas.Mensagem,
+            retryAfterSeconds
+        });
 
     /// <summary>
     /// Registra um novo cliente (público)
