@@ -39,6 +39,7 @@ api/
 - JWT Bearer configurado em `Program.cs`
 - Login: `POST /api/auth/login`
 - Token em `Authorization: Bearer {token}` nas requisições protegidas
+- Login e registro público: no máximo 5 requisições por minuto por IP (`AuthRateLimit`)
 
 ## Frontend (`frontend/`)
 

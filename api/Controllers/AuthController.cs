@@ -2,6 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using MyPerson.Api;
 using Microsoft.IdentityModel.Tokens;
 using MyPerson.Api.Models.Auth;
 
@@ -18,6 +20,7 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
+    [EnableRateLimiting(AuthRateLimit.Policy)]
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {

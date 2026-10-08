@@ -51,6 +51,8 @@ Use o token nas requisições protegidas:
 Authorization: Bearer {token}
 ```
 
+`POST /api/auth/login` e `POST /api/clientes/registro` aceitam 5 requisições por minuto por IP. A sexta responde **429** com `{ "message": "Muitas tentativas. Tente novamente em instantes." }`. Atrás do Nginx, a API usa `X-Forwarded-For` para separar os clientes.
+
 ---
 
 ## Endpoints
