@@ -7,7 +7,7 @@ public static class AuthRateLimit
 {
     public const string Policy = "auth";
 
-    // ponytail: 5 tentativas por minuto por IP; se o abuso vier de muitos IPs, o próximo passo é limite por usuário
+    // 5 requisições por minuto por IP. O bloqueio por conta fica em BloqueioTentativas.
     public const int PermitLimit = 5;
     public static readonly TimeSpan Window = TimeSpan.FromMinutes(1);
 
