@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using MyPerson.Api;
 using Microsoft.EntityFrameworkCore;
 using MyPerson.Api.Data;
 using MyPerson.Api.Models;
@@ -100,8 +102,10 @@ public class ClientesController : ControllerBase
     /// <summary>
     /// Registra um novo cliente (público)
     /// </summary>
+    [EnableRateLimiting(AuthRateLimit.Policy)]
     [HttpPost("registro")]
     [ProducesResponseType(201, Type = typeof(ClienteResponseDto))]
+    [ProducesResponseType(429)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public async Task<ActionResult<ClienteResponseDto>> RegistrarCliente(CriarClienteDto dto)
