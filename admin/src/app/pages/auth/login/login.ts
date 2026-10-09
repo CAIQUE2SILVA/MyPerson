@@ -35,6 +35,7 @@ export class Login {
   private readonly fb = inject(FormBuilder);
 
   readonly loading = signal(false);
+  readonly bloqueado = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly hidePassword = signal(true);
 
@@ -57,9 +58,14 @@ export class Login {
         this.loading.set(false);
         void this.router.navigate(['/']);
       },
-      error: () => {
+      error: (err: unknown) => {
         this.loading.set(false);
-        this.errorMessage.set('Usuário ou senha inválidos.');
+        const texto = err instanceof Error && err.message ? err.message : 'Usuário ou senha inválidos.';
+        this.errorMessage.set(texto);
+        if (texto.includes('Muitas tentativas')) {
+          this.bloqueado.set(true);
+          this.form.disable();
+        }
       },
     });
   }

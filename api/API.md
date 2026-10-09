@@ -51,7 +51,7 @@ Use o token nas requisições protegidas:
 Authorization: Bearer {token}
 ```
 
-`POST /api/auth/login` e `POST /api/clientes/registro` aceitam 5 requisições por minuto por IP. A sexta responde **429** com `{ "message": "Muitas tentativas. Tente novamente em instantes." }`. Atrás do Nginx, a API usa `X-Forwarded-For` para separar os clientes.
+`POST /api/auth/login` e `POST /api/clientes/registro` aceitam 5 requisições por minuto por IP. Além disso, 5 senhas erradas no admin (`POST /api/auth/login`) ou no cliente (`POST /api/clientes/entrar`) bloqueiam aquela conta por 15 minutos, mesmo a partir de outro IP. A resposta é **429** com `{ "message": "Muitas tentativas. Tente novamente em instantes.", "retryAfterSeconds": 900 }`. Atrás do Nginx, a API usa `X-Forwarded-For` para separar os clientes.
 
 ---
 
@@ -168,6 +168,7 @@ Produto inativo ou inexistente em `GET /api/produtos/vitrine/{id}` responde 404.
 | GET | `/api/clientes` | Sim | Lista todos os clientes |
 | GET | `/api/clientes/{id}` | Sim | Busca cliente por ID |
 | POST | `/api/clientes/registro` | Não | Registra novo cliente |
+| POST | `/api/clientes/entrar` | Não | Entra com e-mail e senha. Não devolve token de admin |
 | PUT | `/api/clientes/{id}` | Sim | Atualiza cliente |
 | DELETE | `/api/clientes/{id}` | Sim | Remove cliente |
 

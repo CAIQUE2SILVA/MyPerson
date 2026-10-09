@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using MyPerson.Api;
 using MyPerson.Api.Controllers;
 using MyPerson.Api.Models.Auth;
 using Xunit;
@@ -25,7 +26,7 @@ public class AuthControllerTests
     [Fact]
     public void Login_ComCredenciaisValidas_RetornaToken()
     {
-        var controller = new AuthController(BuildConfiguration());
+        var controller = new AuthController(BuildConfiguration(), new BloqueioTentativas());
         var request = new LoginRequest { Username = "admin", Password = "admin123" };
 
         var result = controller.Login(request) as OkObjectResult;
@@ -39,11 +40,26 @@ public class AuthControllerTests
     [Fact]
     public void Login_ComCredenciaisInvalidas_RetornaUnauthorized()
     {
-        var controller = new AuthController(BuildConfiguration());
+        var controller = new AuthController(BuildConfiguration(), new BloqueioTentativas());
         var request = new LoginRequest { Username = "admin", Password = "senha-errada" };
 
         var result = controller.Login(request) as UnauthorizedObjectResult;
 
         Assert.NotNull(result);
+    }
+
+    [Fact]
+    public void Login_AposCincoSenhasErradas_BloqueiaASenhaCorreta()
+    {
+        var controller = new AuthController(BuildConfiguration(), new BloqueioTentativas());
+        var ruim = new LoginRequest { Username = "admin", Password = "errada" };
+
+        for (var i = 0; i < BloqueioTentativas.MaxFalhas; i++)
+            controller.Login(ruim);
+
+        var bloqueio = controller.Login(new LoginRequest { Username = "admin", Password = "admin123" }) as ObjectResult;
+
+        Assert.NotNull(bloqueio);
+        Assert.Equal(429, bloqueio.StatusCode);
     }
 }

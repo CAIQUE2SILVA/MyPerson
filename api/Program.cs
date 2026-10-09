@@ -59,6 +59,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSingleton<BloqueioTentativas>();
+
 builder.Services.AddAuthorization();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
